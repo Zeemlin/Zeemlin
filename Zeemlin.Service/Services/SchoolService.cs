@@ -161,7 +161,7 @@ public class SchoolService : ISchoolService
     }
 
 
-    public async Task<IEnumerable<SchoolForResultDto>> FilterByRegionAsync(Region region, SchoolType? schoolType = null)
+    public async Task<IEnumerable<SchoolForResultDto>> FilterByRegionAsync(Region region, EducationType? schoolType = null)
     {
         var query = _schoolRepository.SelectAll()
           .Include(s => s.SchoolLogoAsset) // Include SchoolLogoAsset in the query

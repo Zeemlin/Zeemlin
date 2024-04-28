@@ -35,7 +35,7 @@ public class SchoolsController : BaseController
         => Ok(await this._schoolService.ModifyAsync(id, dto));
 
     [HttpGet("filter")]
-    public async Task<IActionResult> FilterByRegionAndType(Region region, SchoolType? schoolType = null)
+    public async Task<IActionResult> FilterByRegionAndType(Region region, EducationType? schoolType = null)
     {
         var schools = await _schoolService.FilterByRegionAsync(region, schoolType);
         return Ok(schools);

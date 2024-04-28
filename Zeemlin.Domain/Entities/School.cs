@@ -12,7 +12,7 @@ public class School : Auditable
     [Required] // Adjust MaxLength as needed
     public long SchoolNumber { get; set; }
     [Required]
-    public SchoolType SchoolType { get; set; }
+    public EducationType SchoolType { get; set; }
 
     [Required]
     [MaxLength(255)] // Adjust MaxLength as needed
