@@ -31,48 +31,6 @@ public class EmailService : IEmailService
         return true;
     }
 
-    public async Task SendEmailWithAttachment(string recipientEmail, string subject, string messageBody, byte[] attachmentData)
-    {
-        var email = new MimeMessage();
-        email.From.Add(MailboxAddress.Parse(_configuration["EmailAddress"]));
-        email.To.Add(MailboxAddress.Parse(recipientEmail));
-
-        email.Subject = subject;
-
-        var multipart = new Multipart("mixed");
-        email.Body = multipart;
-
-        // Add the text part to the multipart message
-        var textPart = new TextPart("html")
-        {
-            Text = messageBody
-        };
-        multipart.Add(textPart);
-
-        // Add the PDF attachment to the multipart message
-        var attachmentMessage = new MimeMessage();
-        attachmentMessage.Body = new TextPart("plain") { Text = "This is the attachment content" }; // Or any other content type
-
-        var attachmentPart = new MessagePart("message/rfc822")
-        {
-            Message = attachmentMessage
-        };
-        attachmentPart.ContentDisposition = new ContentDisposition("attachment") { FileName = "RegistrationConfirmation.pdf" };
-
-
-        multipart.Add(attachmentPart);
-
-
-        var smtp = new SmtpClient();
-
-        await smtp.ConnectAsync(_configuration["Host"], 587, MailKit.Security.SecureSocketOptions.StartTls);
-        await smtp.AuthenticateAsync(_configuration["EmailAddress"], _configuration["Password"]);
-        await smtp.SendAsync(email);
-        await smtp.DisconnectAsync(true);
-    }
-
-
-
     public async Task SendMessage(Message message)
     {
         var email = new MimeMessage();

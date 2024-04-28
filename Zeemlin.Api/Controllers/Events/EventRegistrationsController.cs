@@ -3,7 +3,6 @@ using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Events.EventRegistrations;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces.Events.EventsRegistrations;
-using Zeemlin.Service.Services.Events;
 
 namespace Zeemlin.Api.Controllers.Events;
 
@@ -21,7 +20,7 @@ public class EventRegistrationsController : BaseController
       => Ok(await _eventRegistration.CreateAsync(dto));
 
     [HttpGet]
-    public async Task<IActionResult> GetAllAsync(PaginationParams @params)
+    public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params)
       => Ok(await _eventRegistration.GetAllAsync(@params));
 
     [HttpGet("{id}")]
@@ -44,4 +43,30 @@ public class EventRegistrationsController : BaseController
             return BadRequest(new { message = ex.Message });
         }
     }
+    [HttpGet("{eventId}/search-by-code")]
+    public async Task<IActionResult> SearchByCodeAsync(long eventId, string code)
+    {
+        if (string.IsNullOrEmpty(code))
+        {
+            return BadRequest(new { message = "Registration code cannot be null or empty." });
+        }
+
+        try
+        {
+            var registration = await _eventRegistration.SearchByCodeAsync(code, eventId);
+            return Ok(registration);
+        }
+        catch (ZeemlinException ex)
+        {
+            if (ex.StatusCode == 404)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            else
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+    }
+
 }

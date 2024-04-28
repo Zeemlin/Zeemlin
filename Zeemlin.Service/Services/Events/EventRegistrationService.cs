@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using iTextSharp.text; // Namespace for core iTextSharp functionalities
-using iTextSharp.text.pdf; // Namespace for PDF generation functionalities
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Zeemlin.Data.IRepositries.Events;
+using Zeemlin.Domain.Entities;
 using Zeemlin.Domain.Entities.Events;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Configurations;
@@ -40,49 +40,6 @@ public class EventRegistrationService : IEventRegistrationService
         return new string(Enumerable.Repeat(chars, 5)
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
-
-    public async Task<MemoryStream> GenerateRegistrationConfirmationPdf(EventRegistration registration, Event evnt)
-    {
-        // Create a MemoryStream object to hold the PDF data
-        var memoryStream = new MemoryStream();
-
-        // Use iTextSharp to create a PDF document
-        Document document = new Document(PageSize.A4);
-        var writer = PdfWriter.GetInstance(document, memoryStream);
-        document.Open();
-
-        // Add content to the PDF (e.g., user information, event details)
-        var paragraph = new Paragraph($"Registration Confirmation for {evnt.Title}");
-        paragraph.Font.IsStandardFont(); // Set font size using SetFontSize method
-        paragraph.Alignment = Element.ALIGN_CENTER;
-        document.Add(paragraph);
-
-        document.Add(new Paragraph(" ")); // Add some spacing
-
-        document.Add(new Phrase($"Name: {registration.FirstName} {registration.LastName}"));
-        document.Add(new Phrase($"Email: {registration.Email}"));
-        document.Add(new Phrase($"Registration Code: {registration.RegistrationCode}")); // Assuming there's a RegistrationCode property in EventRegistration
-        document.Add(new Phrase($"Registration Date: {registration.RegistrationDate:yyyy-MM-dd HH:mm}"));
-
-        document.Add(new Paragraph(" ")); // Add some spacing
-
-        document.Add(new Phrase($"Event Name: {evnt.Title}"));
-        document.Add(new Phrase($"Event Time: {evnt.StartedAt:yyyy-MM-dd HH:mm} - {evnt.EndDate:yyyy-MM-dd HH:mm}"));
-        document.Add(new Phrase($"Event Location: {evnt.Location}"));
-        document.Add(new Phrase($"Event Address: {evnt.Address}"));
-
-        // Format price with currency symbol (assuming Price is a decimal)
-        document.Add(new Phrase($"Event Price: {evnt.Price:C}")); // Uses the current culture's currency format
-
-        document.Close();
-
-        // Don't close the MemoryStream here (caller will manage disposal)
-        // return memoryStream.ToArray();  // Removed
-
-        return memoryStream;
-    }
-
-
 
     public async Task<EventRegistrationResultDto> CreateAsync(EventRegistrationCreationDto dto)
     {
@@ -168,7 +125,7 @@ public class EventRegistrationService : IEventRegistrationService
         throw new NotImplementedException();
     }
 
-    public async Task<EventRegistrationResultDto> SearchByCodeAsync(string code)
+    public async Task<EventRegistrationResultDto> SearchByCodeAsync(string code, long EventId)
     {
         if (string.IsNullOrEmpty(code))
         {
@@ -176,13 +133,14 @@ public class EventRegistrationService : IEventRegistrationService
         }
 
         var registration = await _eventRegistrationRepository.SelectAll()
-            .Where(r => r.RegistrationCode == code)
+            .Where(r => r.RegistrationCode == code &&
+            r.EventId == EventId)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (registration is null)
         {
-            throw new ZeemlinException(404, "Such a code does not exist or has been disabled.");
+            throw new ZeemlinException(404, "Registration not found");
         }
 
         return _mapper.Map<EventRegistrationResultDto>(registration);
@@ -195,28 +153,33 @@ public class EventRegistrationService : IEventRegistrationService
         return _mapper.Map<ICollection<EventRegistrationResultDto>>(Participants);
     }
 
+
     private async Task SendRegistrationConfirmationEmail(EventRegistration registration, Event evnt)
     {
-        // Generate the PDF data
-        var memoryStream = await GenerateRegistrationConfirmationPdf(registration, evnt);
-
         // Prepare the email content
         var recipientEmail = registration.Email;
         var subject = $"Your Registration Confirmation for {evnt.Title}";
 
-        // Craft a personalized message body
-        var messageBody = $"Dear {registration.FirstName} {registration.LastName},\n" +
-                            $"Thank you for registering for the event '{evnt.Title}'.\n";
+        // Craft the email body with registration and event details
+        var messageBody = $"<style>p {{ margin-bottom: 10px; }}</style>" +
+                      $"<p>Dear {registration.FirstName} {registration.LastName},</p>" +
+                      $"<p>Thank you for registering for the event '{evnt.Title}'.</p>" +
+                      $"<h3>Event Details:</h3>" +
+                      $"<p>- Event Name: {evnt.Title}</p>" +
+                      $"<p>- Event Time: {evnt.StartedAt:yyyy-MM-dd HH:mm}</p>" +
+                      $"<p>- Event Location: {evnt.Location}</p>" +
+                      $"<p>- Your Registration Code: {registration.RegistrationCode}</p>" +
+                      $"<p>We look forward to seeing you at the event!</p>";
 
-        // Convert MemoryStream to byte array
-        var pdfData = memoryStream.ToArray();
-
-        // Send the email with the PDF attachment
-        await _emailService.SendEmailWithAttachment(recipientEmail, subject, messageBody, pdfData);
-
-        // Consider disposing the MemoryStream here (optional)
-        memoryStream.Dispose();
+        // Send the email using the EmailService
+        await _emailService.SendMessage(new Message
+        {
+            To = recipientEmail,
+            Subject = subject,
+            Body = messageBody
+        });
     }
+
 
 
 }
