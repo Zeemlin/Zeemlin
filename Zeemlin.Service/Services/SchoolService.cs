@@ -35,16 +35,16 @@ public class SchoolService : ISchoolService
             throw new ZeemlinException(400, "Invalid school number");
         }
 
-        var existingSchoolWithSameNumberAndStreet = await _schoolRepository
+        var existingSchoolWithSameNameAndDistrict = await _schoolRepository
             .SelectAll()
-            .AsNoTracking()
-            .Where(s => s.SchoolNumber == dto.SchoolNumber
+            .Where(s => s.Name == dto.Name
             && s.DistrictName.ToLower().Equals(dto.DistrictName.ToLower()))
+            .AsNoTracking()
             .AnyAsync();
 
-        if (existingSchoolWithSameNumberAndStreet)
-            throw new ZeemlinException(409,
-                "A school with the same number already exists on that street.");
+        if (existingSchoolWithSameNameAndDistrict)
+            throw new ZeemlinException
+                (409, $"A school with the same {dto.Name} already exists on that {dto.DistrictName} district.");
 
         var director = await _directorRepository.SelectAll()
             .Where(d => d.Id == dto.DirectorId)
@@ -66,8 +66,8 @@ public class SchoolService : ISchoolService
     public async Task<SchoolForResultDto> ModifyAsync(long id, SchoolForUpdateDto dto)
     {
         var school = await _schoolRepository.SelectAll()
-            .AsNoTracking()
             .Where(s => s.Id == id)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (school is null)
@@ -76,16 +76,16 @@ public class SchoolService : ISchoolService
         if (dto.SchoolNumber < 0)
             throw new ZeemlinException(400, "Invalid school number");
 
-        var existingSchoolWithSameNumberAndStreet = await _schoolRepository
+        var existingSchoolWithSameNameAndDistrict = await _schoolRepository
             .SelectAll()
-            .AsNoTracking()
-            .Where(s => s.SchoolNumber == dto.SchoolNumber
+            .Where(s => s.Name == dto.Name
             && s.DistrictName.ToLower().Equals(dto.DistrictName.ToLower()))
+            .AsNoTracking()
             .AnyAsync();
 
-        if (existingSchoolWithSameNumberAndStreet)
+        if (existingSchoolWithSameNameAndDistrict)
             throw new ZeemlinException
-                (409, $"A school with the same {school.SchoolNumber} already exists on that {school.DistrictName} district.");
+                (409, $"A school with the same {school.Name} already exists on that {school.DistrictName} district.");
 
         var director = await _directorRepository.SelectAll()
             .Where(d => d.Id == dto.DirectorId)
@@ -105,8 +105,8 @@ public class SchoolService : ISchoolService
     public async Task<bool> RemoveAsync(long id)
     {
         var school = await _schoolRepository.SelectAll()
-            .AsNoTracking()
             .Where(s => s.Id == id)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
         if (school is null)
             throw new ZeemlinException(404, "School not found");
@@ -142,8 +142,8 @@ public class SchoolService : ISchoolService
     {
         var school = await _schoolRepository.SelectAll()
           .Include(s => s.SchoolLogoAsset) // Include SchoolLogoAsset in the query
-          .AsNoTracking()
           .Where(s => s.Id == id)
+          .AsNoTracking()
           .FirstOrDefaultAsync();
 
         if (school is null)
@@ -189,8 +189,5 @@ public class SchoolService : ISchoolService
 
         return schoolDtos;
     }
-
-
-
 
 }
