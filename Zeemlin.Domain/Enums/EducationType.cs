@@ -7,6 +7,9 @@ public enum EducationType : byte
     InnovationAndTechnology,
     LanguageLearning,
     PersonalDevelopment,
-    TestPreparation = 1,
+    SpecialNeedsEducation,
+    Sport,
+    TestPreparation,
+    VocationalEducation,
     Others,
 }
