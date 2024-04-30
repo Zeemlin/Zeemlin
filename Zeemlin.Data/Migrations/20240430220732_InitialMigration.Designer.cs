@@ -12,15 +12,15 @@ using Zeemlin.Data.DbContexts;
 namespace Zeemlin.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240417102341_ClassesUpdatedMigrations")]
-    partial class ClassesUpdatedMigrations
+    [Migration("20240430220732_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.11")
+                .HasAnnotation("ProductVersion", "8.0.4")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -127,8 +127,15 @@ namespace Zeemlin.Data.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
+                    b.Property<long>("AdminId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Path")
                         .IsRequired()
@@ -137,6 +144,11 @@ namespace Zeemlin.Data.Migrations
                     b.Property<long>("SchoolId")
                         .HasColumnType("bigint");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -144,6 +156,8 @@ namespace Zeemlin.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AdminId");
 
                     b.HasIndex("SchoolId");
 
@@ -182,6 +196,37 @@ namespace Zeemlin.Data.Migrations
                     b.ToTable("SchoolLogoAssets", (string)null);
                 });
 
+            modelBuilder.Entity("Zeemlin.Domain.Entities.Assets.StudentAward", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("StudentId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UploadedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StudentId");
+
+                    b.ToTable("StudentAwards");
+                });
+
             modelBuilder.Entity("Zeemlin.Domain.Entities.Assets.TeacherAsset", b =>
                 {
                     b.Property<long>("Id")
@@ -212,6 +257,37 @@ namespace Zeemlin.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("TeacherAssets", (string)null);
+                });
+
+            modelBuilder.Entity("Zeemlin.Domain.Entities.Assets.TeacherAward", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Path")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<long>("TeacherId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("UploadedDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TeacherId");
+
+                    b.ToTable("TeacherAwards");
                 });
 
             modelBuilder.Entity("Zeemlin.Domain.Entities.Assets.VideoLessonAsset", b =>
@@ -272,12 +348,13 @@ namespace Zeemlin.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<long>("SchoolId")
                         .HasColumnType("bigint");
@@ -298,7 +375,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7770),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9141),
                             Description = "A comprehensive course covering all aspects of the English language.",
                             Name = "English Language Course",
                             SchoolId = 1L,
@@ -308,7 +385,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 2L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7773),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9147),
                             Description = "A course focusing on various aspects of computer science and programming.",
                             Name = "Computer Science Course",
                             SchoolId = 2L,
@@ -318,7 +395,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 3L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7774),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9150),
                             Description = "A course covering photography techniques, equipment, and artistic aspects.",
                             Name = "Photography Course",
                             SchoolId = 8L,
@@ -328,7 +405,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 4L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7776),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9152),
                             Description = "A comprehensive course covering various mathematical concepts and techniques.",
                             Name = "Mathematics Course",
                             SchoolId = 3L,
@@ -338,7 +415,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 5L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7777),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9154),
                             Description = "A course exploring the history and development of art from different periods and cultures.",
                             Name = "Art History Course",
                             SchoolId = 4L,
@@ -348,7 +425,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 6L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7779),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9157),
                             Description = "A course covering fundamental principles of physics and their practical applications.",
                             Name = "Physics Course",
                             SchoolId = 5L,
@@ -358,7 +435,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 7L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7780),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9159),
                             Description = "A course exploring music theory, notation, composition, and performance.",
                             Name = "Music Theory Course",
                             SchoolId = 6L,
@@ -368,7 +445,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 8L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7781),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9161),
                             Description = "A course covering the principles of chemistry, including atomic structure, chemical reactions, and bonding.",
                             Name = "Chemistry Course",
                             SchoolId = 7L,
@@ -378,7 +455,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 9L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7782),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9163),
                             Description = "A course studying the Earth's landscapes, environments, and human geography.",
                             Name = "Geography Course",
                             SchoolId = 8L,
@@ -388,7 +465,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 10L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7832),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9166),
                             Description = "A course focusing on the French language, covering vocabulary, grammar, and conversation.",
                             Name = "French Language Course",
                             SchoolId = 9L,
@@ -398,7 +475,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 11L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7833),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9168),
                             Description = "A course covering algebraic concepts and techniques, including equations, functions, and polynomials.",
                             Name = "Algebra Course",
                             SchoolId = 10L,
@@ -408,7 +485,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 12L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7834),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9170),
                             Description = "A course exploring the principles of biology, including cell biology, genetics, and ecology.",
                             Name = "Biology Course",
                             SchoolId = 11L,
@@ -418,7 +495,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 13L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7835),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9172),
                             Description = "A course focusing on the Russian language, covering vocabulary, grammar, and conversation.",
                             Name = "Russian Language Course",
                             SchoolId = 12L,
@@ -428,7 +505,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 14L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7837),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9174),
                             Description = "A course exploring classic and contemporary works of English literature.",
                             Name = "English Literature Course",
                             SchoolId = 13L,
@@ -438,7 +515,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 15L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7838),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9176),
                             Description = "A course examining the history and development of art from different cultures and periods.",
                             Name = "History of Art Course",
                             SchoolId = 1L,
@@ -448,7 +525,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 16L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7839),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9178),
                             Description = "A course covering fundamental concepts of computer science, programming, and algorithms.",
                             Name = "Computer Science Course",
                             SchoolId = 2L,
@@ -458,7 +535,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 17L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7840),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9180),
                             Description = "A course studying the Earth's structure, rocks, minerals, and geological processes.",
                             Name = "Geology Course",
                             SchoolId = 3L,
@@ -468,7 +545,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 18L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7842),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9189),
                             Description = "A course focusing on IT concepts, including hardware, software, networks, and cybersecurity.",
                             Name = "Information Technology Course",
                             SchoolId = 4L,
@@ -478,7 +555,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 19L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7843),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9191),
                             Description = "A course covering principles and techniques of chemical engineering, including unit operations and process design.",
                             Name = "Chemical Engineering Course",
                             SchoolId = 5L,
@@ -488,7 +565,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 20L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7844),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9193),
                             Description = "A course focusing on physical fitness, sports, and exercise physiology.",
                             Name = "Physical Education Course",
                             SchoolId = 6L,
@@ -498,7 +575,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 21L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7845),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9195),
                             Description = "A course exploring advanced concepts in algebraic geometry, including varieties and schemes.",
                             Name = "Algebraic Geometry Course",
                             SchoolId = 7L,
@@ -508,7 +585,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 22L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7847),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9197),
                             Description = "A course studying the Earth's environment, ecosystems, and human impact on nature.",
                             Name = "Environmental Science Course",
                             SchoolId = 8L,
@@ -518,7 +595,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 23L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7848),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9199),
                             Description = "A course exploring the art and techniques of French cuisine, including cooking methods and recipes.",
                             Name = "French Cuisine Course",
                             SchoolId = 9L,
@@ -528,7 +605,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 24L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7849),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9201),
                             Description = "A course exploring the art and techniques of French cuisine, including cooking methods and recipes.",
                             Name = "Course",
                             SchoolId = 9L,
@@ -538,7 +615,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 25L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7850),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9203),
                             Description = "A course exploring the art and techniques of French cuisine, including cooking methods and recipes.",
                             Name = "Course",
                             SchoolId = 10L,
@@ -572,7 +649,8 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("timestamp with time zone");
@@ -591,17 +669,15 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Location")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<string>("OfficialPage")
                         .HasColumnType("text");
 
-                    b.Property<string>("Orginizer")
+                    b.Property<string>("Organizer")
                         .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<long?>("ParentId")
-                        .HasColumnType("bigint");
 
                     b.Property<decimal?>("Price")
                         .HasColumnType("numeric");
@@ -612,15 +688,10 @@ namespace Zeemlin.Data.Migrations
                     b.Property<short>("Status")
                         .HasColumnType("smallint");
 
-                    b.Property<long?>("StudentId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long?>("TeacherId")
-                        .HasColumnType("bigint");
-
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -629,12 +700,6 @@ namespace Zeemlin.Data.Migrations
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ParentId");
-
-                    b.HasIndex("StudentId");
-
-                    b.HasIndex("TeacherId");
 
                     b.ToTable("Events", (string)null);
                 });
@@ -742,8 +807,8 @@ namespace Zeemlin.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -764,7 +829,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 1L,
                             CourseId = 1L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7903),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9340),
                             Description = "A group for beginner English language learners.",
                             Name = "Beginner English Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -773,7 +838,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 2L,
                             CourseId = 2L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7906),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9344),
                             Description = "A group focusing on Java programming language and application development.",
                             Name = "Java Programming Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -782,7 +847,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 3L,
                             CourseId = 3L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7908),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9346),
                             Description = "A group for beginners learning basic photography techniques.",
                             Name = "Basic Photography Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -791,7 +856,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 4L,
                             CourseId = 4L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7909),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9349),
                             Description = "A group for intermediate level mathematics students.",
                             Name = "Intermediate Mathematics Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -800,7 +865,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 5L,
                             CourseId = 5L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7910),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9351),
                             Description = "A group studying Renaissance art and its influences.",
                             Name = "Renaissance Art Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -809,7 +874,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 6L,
                             CourseId = 6L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7912),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9354),
                             Description = "A group focusing on advanced topics in physics and theoretical physics.",
                             Name = "Advanced Physics Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -818,7 +883,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 7L,
                             CourseId = 7L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7913),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9356),
                             Description = "A group focusing on learning to play musical instruments and ensemble performance.",
                             Name = "Instrumental Music Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -827,7 +892,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 8L,
                             CourseId = 8L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7914),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9358),
                             Description = "A group studying organic chemistry and its applications in industry and research.",
                             Name = "Organic Chemistry Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -836,7 +901,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 9L,
                             CourseId = 9L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7915),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9360),
                             Description = "A group exploring environmental issues and sustainability.",
                             Name = "Environmental Studies Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -845,7 +910,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 10L,
                             CourseId = 10L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7917),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9362),
                             Description = "A group for intermediate French language learners.",
                             Name = "Intermediate French Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -854,7 +919,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 11L,
                             CourseId = 11L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7918),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9364),
                             Description = "A group focusing on advanced algebraic concepts and problem-solving techniques.",
                             Name = "Advanced Algebra Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -863,7 +928,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 12L,
                             CourseId = 12L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7919),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9366),
                             Description = "A group studying the cellular structure, function, and processes.",
                             Name = "Cell Biology Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -872,7 +937,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 13L,
                             CourseId = 13L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7920),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9368),
                             Description = "A group focusing on practicing conversational Russian language skills.",
                             Name = "Russian Language Conversation Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -881,7 +946,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 14L,
                             CourseId = 14L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7921),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9370),
                             Description = "A group studying the works of William Shakespeare and Elizabethan literature.",
                             Name = "Shakespearean Literature Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -890,7 +955,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 15L,
                             CourseId = 15L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7922),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9372),
                             Description = "A group exploring ancient civilizations, cultures, and historical events.",
                             Name = "Ancient History Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -899,7 +964,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 16L,
                             CourseId = 16L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7923),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9374),
                             Description = "A group focusing on advanced algorithms and problem-solving strategies.",
                             Name = "Advanced Algorithms Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -908,7 +973,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 17L,
                             CourseId = 17L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7924),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9376),
                             Description = "A group studying volcanoes, volcanic processes, and volcanic hazards.",
                             Name = "Volcanology Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -917,7 +982,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 18L,
                             CourseId = 18L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7926),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9379),
                             Description = "A group focusing on network security principles, protocols, and practices.",
                             Name = "Network Security Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -926,7 +991,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 19L,
                             CourseId = 19L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7927),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9381),
                             Description = "A group studying chemical engineering process design and optimization.",
                             Name = "Process Design Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -935,7 +1000,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 20L,
                             CourseId = 20L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7928),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9382),
                             Description = "A group focusing on team sports and cooperative gameplay.",
                             Name = "Team Sports Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -944,7 +1009,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 21L,
                             CourseId = 11L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7929),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9384),
                             Description = "A group studying abstract algebraic structures and their properties.",
                             Name = "Abstract Algebra Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -953,7 +1018,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 22L,
                             CourseId = 12L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7930),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9386),
                             Description = "A group focusing on the study of genes, heredity, and genetic variation.",
                             Name = "Genetics Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -962,7 +1027,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 23L,
                             CourseId = 13L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7931),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9388),
                             Description = "A group for advanced learners focusing on complex aspects of Russian language and literature.",
                             Name = "Advanced Russian Language Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -971,7 +1036,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 24L,
                             CourseId = 14L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7933),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9391),
                             Description = "A group studying modern literary works and contemporary authors.",
                             Name = "Modern Literature Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -980,7 +1045,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 25L,
                             CourseId = 15L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7934),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9393),
                             Description = "A group focusing on art and artists from the Renaissance period.",
                             Name = "Renaissance Art Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -989,7 +1054,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 26L,
                             CourseId = 16L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7935),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9395),
                             Description = "A group studying machine learning algorithms and applications.",
                             Name = "Machine Learning Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -998,7 +1063,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 27L,
                             CourseId = 17L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7936),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9397),
                             Description = "A group studying fossils, ancient life forms, and prehistoric ecosystems.",
                             Name = "Paleontology Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1007,7 +1072,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 28L,
                             CourseId = 18L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7937),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9399),
                             Description = "A group focusing on cybersecurity practices, threats, and defenses.",
                             Name = "Cybersecurity Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1016,7 +1081,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 29L,
                             CourseId = 19L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7938),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9401),
                             Description = "A group studying optimization techniques for chemical processes.",
                             Name = "Chemical Process Optimization Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1025,7 +1090,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 30L,
                             CourseId = 20L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7939),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9403),
                             Description = "A group focusing on yoga, meditation, and mindfulness practices.",
                             Name = "Yoga and Meditation Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1034,7 +1099,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 31L,
                             CourseId = 21L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7940),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9404),
                             Description = "A group focusing on yoga, meditation, and mindfulness practices.",
                             Name = "Yoga and Meditation Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1043,7 +1108,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 32L,
                             CourseId = 15L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7941),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9406),
                             Description = "A group focusing on yoga, meditation, and mindfulness practices.",
                             Name = "Yoga and Meditation Group",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified)
@@ -1066,15 +1131,16 @@ namespace Zeemlin.Data.Migrations
                         .HasColumnType("text");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<long>("LessonId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1089,7 +1155,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8084),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9657),
                             Deadline = "23:59:59",
                             Description = "Complete the exercises on basic English grammar concepts covered in the lesson.",
                             LessonId = 1L,
@@ -1099,7 +1165,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 2L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8088),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9663),
                             Deadline = "23:59:59",
                             Description = "Write a short paragraph applying the grammar rules discussed in class.",
                             LessonId = 1L,
@@ -1109,7 +1175,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 3L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8090),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9665),
                             Deadline = "23:59:59",
                             Description = "Write a Java program that demonstrates the use of variables and different data types.",
                             LessonId = 2L,
@@ -1119,7 +1185,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 4L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8091),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9667),
                             Deadline = "23:59:59",
                             Description = "Solve the programming problems provided and submit your solutions.",
                             LessonId = 2L,
@@ -1129,7 +1195,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 5L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8092),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9669),
                             Deadline = "23:59:59",
                             Description = "Take photographs applying the composition techniques discussed in class.",
                             LessonId = 3L,
@@ -1139,7 +1205,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 6L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8094),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9673),
                             Deadline = "23:59:59",
                             Description = "Edit the provided photographs using editing software and submit your edited versions.",
                             LessonId = 3L,
@@ -1149,7 +1215,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 7L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8095),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9675),
                             Deadline = "23:59:59",
                             Description = "Solve the algebraic problems provided and submit your solutions.",
                             LessonId = 4L,
@@ -1159,7 +1225,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 8L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8096),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9677),
                             Deadline = "23:59:59",
                             Description = "Practice solving algebraic equations of different types.",
                             LessonId = 4L,
@@ -1169,7 +1235,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 9L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8098),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9679),
                             Deadline = "23:59:59",
                             Description = "Analyze a Renaissance artwork of your choice and write an essay.",
                             LessonId = 5L,
@@ -1179,7 +1245,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 10L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8099),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9686),
                             Deadline = "23:59:59",
                             Description = "Reproduce a famous Renaissance artwork using your preferred medium.",
                             LessonId = 5L,
@@ -1189,7 +1255,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 11L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8100),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9688),
                             Deadline = "23:59:59",
                             Description = "Reproduce a famous Renaissance artwork using your preferred medium.",
                             LessonId = 8L,
@@ -1199,7 +1265,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 12L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8101),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9690),
                             Deadline = "23:59:59",
                             Description = "Reproduce a famous Renaissance artwork using your preferred medium.",
                             LessonId = 8L,
@@ -1220,8 +1286,8 @@ namespace Zeemlin.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<string>("EndDate")
                         .IsRequired()
@@ -1257,7 +1323,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7990),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9514),
                             Description = "An introductory lesson covering basic English grammar concepts.",
                             EndDate = "10:00",
                             GroupId = 1L,
@@ -1269,7 +1335,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 2L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7995),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9519),
                             Description = "A beginner-level lesson introducing fundamental Java programming concepts.",
                             EndDate = "10:00",
                             GroupId = 2L,
@@ -1281,7 +1347,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 3L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7997),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9522),
                             Description = "An introductory lesson covering basic photography techniques and principles.",
                             EndDate = "10:00",
                             GroupId = 3L,
@@ -1293,7 +1359,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 4L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7998),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9524),
                             Description = "A lesson focusing on intermediate-level algebraic concepts and problem-solving techniques.",
                             EndDate = "10:00",
                             GroupId = 4L,
@@ -1305,7 +1371,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 5L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8000),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9526),
                             Description = "A lesson introducing Renaissance art and its historical significance.",
                             EndDate = "10:00",
                             GroupId = 5L,
@@ -1317,7 +1383,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 6L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8001),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9530),
                             Description = "An advanced lesson covering quantum mechanics and its applications.",
                             EndDate = "10:00",
                             GroupId = 6L,
@@ -1329,7 +1395,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 7L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8003),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9533),
                             Description = "A beginner-level lesson introducing piano playing techniques and music theory.",
                             EndDate = "10:00",
                             GroupId = 7L,
@@ -1341,7 +1407,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 8L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8004),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9535),
                             Description = "An introductory lesson covering basic organic chemistry principles and reactions.",
                             EndDate = "10:00",
                             GroupId = 8L,
@@ -1353,7 +1419,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 9L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8005),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9538),
                             Description = "A lesson exploring ancient civilizations and their contributions to world history.",
                             EndDate = "10:00",
                             GroupId = 9L,
@@ -1365,7 +1431,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 10L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8007),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9541),
                             Description = "An introductory lesson covering basic graphic design principles and software tools.",
                             EndDate = "10:00",
                             GroupId = 10L,
@@ -1377,7 +1443,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 11L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8009),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9543),
                             Description = "A beginner-level lesson introducing basic web development concepts and technologies.",
                             EndDate = "10:00",
                             GroupId = 11L,
@@ -1389,7 +1455,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 12L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8010),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9545),
                             Description = "A beginner-level lesson introducing basic web development concepts and technologies.",
                             EndDate = "10:00",
                             GroupId = 12L,
@@ -1401,7 +1467,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 13L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8011),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9548),
                             Description = "A beginner-level lesson introducing basic web development concepts and technologies.",
                             EndDate = "10:00",
                             GroupId = 13L,
@@ -1599,13 +1665,7 @@ namespace Zeemlin.Data.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
 
                     b.Property<string>("CallCenter")
-                        .IsRequired()
                         .HasColumnType("text");
-
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -1624,7 +1684,6 @@ namespace Zeemlin.Data.Migrations
                         .HasColumnType("character varying(50)");
 
                     b.Property<string>("EmailCenter")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("GeneralAddressMFY")
@@ -1637,16 +1696,10 @@ namespace Zeemlin.Data.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
-                    b.Property<long?>("ParentId")
-                        .HasColumnType("bigint");
-
                     b.Property<int>("Region")
                         .HasColumnType("integer");
 
                     b.Property<long?>("SchoolLogoAssetId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("SchoolNumber")
                         .HasColumnType("bigint");
 
                     b.Property<byte>("SchoolType")
@@ -1657,9 +1710,6 @@ namespace Zeemlin.Data.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)");
 
-                    b.Property<long?>("StudentId")
-                        .HasColumnType("bigint");
-
                     b.Property<long?>("SuperAdminId")
                         .HasColumnType("bigint");
 
@@ -1667,15 +1717,12 @@ namespace Zeemlin.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Website")
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("DirectorId");
-
-                    b.HasIndex("ParentId");
-
-                    b.HasIndex("StudentId");
 
                     b.HasIndex("SuperAdminId");
 
@@ -1686,8 +1733,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 1L,
                             CallCenter = "+998900000001",
-                            Country = "O'zbekiston",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7688),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8984),
                             Description = "Xalqaro standartlarga asoslangan innovatsion ta'lim muassasasi",
                             DirectorId = 1L,
                             DistrictName = "Mirzo Ulug'bek",
@@ -1695,8 +1741,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Uch Qahramon MFY",
                             Name = "Inter-Nation",
                             Region = 2,
-                            SchoolNumber = 12345L,
-                            SchoolType = (byte)1,
+                            SchoolType = (byte)3,
                             StreetName = "Bog'ishamol ko'chasi",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "TXM.com"
@@ -1705,8 +1750,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 2L,
                             CallCenter = "+998900000002",
-                            Country = "O'zbekiston",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7693),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8991),
                             Description = "Ingliz olami",
                             DirectorId = 2L,
                             DistrictName = "Eskishahar",
@@ -1714,8 +1758,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Xo'ja Ahror Vali MFY",
                             Name = "Cambridge Edu",
                             Region = 11,
-                            SchoolNumber = 54321L,
-                            SchoolType = (byte)4,
+                            SchoolType = (byte)3,
                             StreetName = "Registon ko'chasi",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "STI.com"
@@ -1724,8 +1767,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 3L,
                             CallCenter = "+998900000003",
-                            Country = "O'zbekiston",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7695),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8995),
                             Description = "Pedagogika sohasida yuqori malakali mutaxassislar tayyorlaydigan oliy ta'lim muassasasi",
                             DirectorId = 3L,
                             DistrictName = "Shahriston",
@@ -1733,8 +1775,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Pedagogika instituti",
                             Name = "Andijon Pedagogika Instituti",
                             Region = 3,
-                            SchoolNumber = 67890L,
-                            SchoolType = (byte)1,
+                            SchoolType = (byte)3,
                             StreetName = "Pedagogika ko'chasi",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "API.com"
@@ -1743,8 +1784,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 4L,
                             CallCenter = "+998900000004",
-                            Country = "O'zbekiston",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7697),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8998),
                             Description = "Oliy ta'lim sohasida yuqori malakali mutaxassislar tayyorlaydigan davlat universiteti",
                             DirectorId = 4L,
                             DistrictName = "Namangan shahri",
@@ -1752,8 +1792,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Universitet",
                             Name = "Namangan Davlat Universiteti",
                             Region = 4,
-                            SchoolNumber = 98765L,
-                            SchoolType = (byte)4,
+                            SchoolType = (byte)3,
                             StreetName = "Universitet ko'chasi",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "NDU.com"
@@ -1762,8 +1801,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 5L,
                             CallCenter = "+998900000013",
-                            Country = "Uzbekistan",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7699),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9001),
                             Description = "Center providing language training services.",
                             DirectorId = 3L,
                             DistrictName = "Yunusabad",
@@ -1771,8 +1809,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Language Training Center",
                             Name = "Tashkent Language Training Center",
                             Region = 1,
-                            SchoolNumber = 13579L,
-                            SchoolType = (byte)4,
+                            SchoolType = (byte)3,
                             StreetName = "Language Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "https://tltraining.com"
@@ -1781,8 +1818,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 6L,
                             CallCenter = "+998900000014",
-                            Country = "Uzbekistan",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7701),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9005),
                             Description = "Center offering computer training courses.",
                             DirectorId = 4L,
                             DistrictName = "Samarqand shahri",
@@ -1790,8 +1826,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Computer Training Center",
                             Name = "Samarkand Computer Training Center",
                             Region = 11,
-                            SchoolNumber = 24680L,
-                            SchoolType = (byte)4,
+                            SchoolType = (byte)3,
                             StreetName = "Computer Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "https://sctc.uz"
@@ -1800,8 +1835,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 7L,
                             CallCenter = "+998900000015",
-                            Country = "Uzbekistan",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7703),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9008),
                             Description = "Fitness center offering various training programs.",
                             DirectorId = 1L,
                             DistrictName = "Navoiy shahri",
@@ -1809,8 +1843,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Fitness Training Center",
                             Name = "Navoiy Fitness Training Center",
                             Region = 9,
-                            SchoolNumber = 35791L,
-                            SchoolType = (byte)4,
+                            SchoolType = (byte)3,
                             StreetName = "Fitness Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "https://navfit.com"
@@ -1819,8 +1852,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 8L,
                             CallCenter = "+998900000016",
-                            Country = "Uzbekistan",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7705),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9011),
                             Description = "Center specializing in photography training.",
                             DirectorId = 2L,
                             DistrictName = "Termiz shahri",
@@ -1828,8 +1860,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Photography Training Center",
                             Name = "Surxondaryo Photography Training Center",
                             Region = 12,
-                            SchoolNumber = 46802L,
-                            SchoolType = (byte)4,
+                            SchoolType = (byte)3,
                             StreetName = "Photography Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "https://sptc.uz"
@@ -1838,8 +1869,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 9L,
                             CallCenter = "+998900000017",
-                            Country = "Uzbekistan",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7706),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9014),
                             Description = "Center providing language training services.",
                             DirectorId = 3L,
                             DistrictName = "Yunusabad",
@@ -1847,8 +1877,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Yunusabad MFY",
                             Name = "Tashkent Language Training Center",
                             Region = 1,
-                            SchoolNumber = 13579L,
-                            SchoolType = (byte)4,
+                            SchoolType = (byte)3,
                             StreetName = "Mustaqillik Avenue",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "https://tltraining.com"
@@ -1857,8 +1886,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 10L,
                             CallCenter = "+998900000018",
-                            Country = "Uzbekistan",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7709),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9017),
                             Description = "Center offering computer training courses.",
                             DirectorId = 4L,
                             DistrictName = "Samarqand shahri",
@@ -1866,8 +1894,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Samarqand MFY",
                             Name = "Samarkand Computer Training Center",
                             Region = 11,
-                            SchoolNumber = 24680L,
-                            SchoolType = (byte)3,
+                            SchoolType = (byte)2,
                             StreetName = "Amir Temur Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "https://sctc.uz"
@@ -1876,8 +1903,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 11L,
                             CallCenter = "+998900000019",
-                            Country = "Uzbekistan",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7710),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9020),
                             Description = "Fitness center offering various training programs.",
                             DirectorId = 1L,
                             DistrictName = "Navoiy shahri",
@@ -1885,8 +1911,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Navoiy MFY",
                             Name = "Navoiy Fitness Training Center",
                             Region = 9,
-                            SchoolNumber = 35791L,
-                            SchoolType = (byte)2,
+                            SchoolType = (byte)4,
                             StreetName = "Olmazor Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "https://navfit.com"
@@ -1895,8 +1920,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 12L,
                             CallCenter = "+998900000020",
-                            Country = "Uzbekistan",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7712),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9023),
                             Description = "Center specializing in photography training.",
                             DirectorId = 5L,
                             DistrictName = "Termiz shahri",
@@ -1904,8 +1928,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Termiz MFY",
                             Name = "Surxondaryo Photography Training Center",
                             Region = 12,
-                            SchoolNumber = 46802L,
-                            SchoolType = (byte)1,
+                            SchoolType = (byte)3,
                             StreetName = "Shaxrisabz Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "https://sptc.uz"
@@ -1914,8 +1937,7 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 13L,
                             CallCenter = "+998900000021",
-                            Country = "Uzbekistan",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7714),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9026),
                             Description = "Center specializing in photography training.",
                             DirectorId = 5L,
                             DistrictName = "Termiz shahri",
@@ -1923,8 +1945,7 @@ namespace Zeemlin.Data.Migrations
                             GeneralAddressMFY = "Termiz MFY",
                             Name = "Surxondaryo Photography Training Center",
                             Region = 12,
-                            SchoolNumber = 4680L,
-                            SchoolType = (byte)1,
+                            SchoolType = (byte)3,
                             StreetName = "Shaxrisabz Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Website = "https://sptc.uz"
@@ -1972,15 +1993,16 @@ namespace Zeemlin.Data.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
 
                     b.Property<long>("LessonId")
                         .HasColumnType("bigint");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -2027,7 +2049,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8150),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9831),
                             GroupId = 1L,
                             Role = (byte)3,
                             TeacherId = 1L,
@@ -2036,7 +2058,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 2L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8154),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9838),
                             GroupId = 2L,
                             Role = (byte)3,
                             TeacherId = 1L,
@@ -2045,7 +2067,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 3L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8155),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9840),
                             GroupId = 3L,
                             Role = (byte)3,
                             TeacherId = 2L,
@@ -2054,7 +2076,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 4L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8157),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9842),
                             GroupId = 4L,
                             Role = (byte)3,
                             TeacherId = 2L,
@@ -2063,7 +2085,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 5L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8158),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9844),
                             GroupId = 5L,
                             Role = (byte)3,
                             TeacherId = 3L,
@@ -2072,7 +2094,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 6L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8160),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9849),
                             GroupId = 6L,
                             Role = (byte)3,
                             TeacherId = 3L,
@@ -2081,7 +2103,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 7L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8161),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9850),
                             GroupId = 7L,
                             Role = (byte)3,
                             TeacherId = 4L,
@@ -2090,7 +2112,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 8L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8162),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9852),
                             GroupId = 8L,
                             Role = (byte)3,
                             TeacherId = 5L,
@@ -2099,7 +2121,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 9L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8163),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9855),
                             GroupId = 9L,
                             Role = (byte)3,
                             TeacherId = 6L,
@@ -2108,7 +2130,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 10L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8165),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9857),
                             GroupId = 10L,
                             Role = (byte)3,
                             TeacherId = 7L,
@@ -2117,7 +2139,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 11L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8166),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9859),
                             GroupId = 11L,
                             Role = (byte)3,
                             TeacherId = 8L,
@@ -2126,7 +2148,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 12L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8167),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9861),
                             GroupId = 12L,
                             Role = (byte)3,
                             TeacherId = 9L,
@@ -2135,7 +2157,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 13L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8168),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9863),
                             GroupId = 13L,
                             Role = (byte)3,
                             TeacherId = 10L,
@@ -2144,7 +2166,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 14L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8169),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9865),
                             GroupId = 14L,
                             Role = (byte)3,
                             TeacherId = 11L,
@@ -2153,7 +2175,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 15L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8170),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9867),
                             GroupId = 15L,
                             Role = (byte)3,
                             TeacherId = 12L,
@@ -2162,7 +2184,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 16L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8171),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9869),
                             GroupId = 16L,
                             Role = (byte)3,
                             TeacherId = 13L,
@@ -2171,7 +2193,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 17L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8172),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9870),
                             GroupId = 17L,
                             Role = (byte)3,
                             TeacherId = 14L,
@@ -2180,7 +2202,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 18L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8174),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9873),
                             GroupId = 18L,
                             Role = (byte)3,
                             TeacherId = 15L,
@@ -2189,7 +2211,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 19L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8175),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9875),
                             GroupId = 19L,
                             Role = (byte)3,
                             TeacherId = 16L,
@@ -2198,7 +2220,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 20L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8176),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9877),
                             GroupId = 20L,
                             Role = (byte)3,
                             TeacherId = 17L,
@@ -2207,7 +2229,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 21L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8177),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9879),
                             GroupId = 21L,
                             Role = (byte)3,
                             TeacherId = 18L,
@@ -2216,7 +2238,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 22L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8178),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9881),
                             GroupId = 22L,
                             Role = (byte)3,
                             TeacherId = 19L,
@@ -2225,7 +2247,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 23L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8179),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9882),
                             GroupId = 23L,
                             Role = (byte)3,
                             TeacherId = 20L,
@@ -2234,7 +2256,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 24L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8180),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9884),
                             GroupId = 24L,
                             Role = (byte)3,
                             TeacherId = 21L,
@@ -2243,7 +2265,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 25L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(8181),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(9885),
                             GroupId = 25L,
                             Role = (byte)3,
                             TeacherId = 22L,
@@ -2264,18 +2286,21 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<byte>("Gender")
                         .HasColumnType("smallint");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("PassportSeria")
                         .IsRequired()
@@ -2284,7 +2309,8 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<long>("SchoolId")
                         .HasColumnType("bigint");
@@ -2297,7 +2323,8 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -2311,7 +2338,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7392),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8455),
                             Email = "johndoe@admin1.com",
                             FirstName = "John",
                             Gender = (byte)1,
@@ -2325,7 +2352,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 2L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7395),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8460),
                             Email = "janesmith@admin2.com",
                             FirstName = "Jane",
                             Gender = (byte)2,
@@ -2339,7 +2366,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 3L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7398),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8464),
                             Email = "michaeljohnson@admin1.com",
                             FirstName = "Michael",
                             Gender = (byte)1,
@@ -2353,7 +2380,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 4L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7400),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8467),
                             Email = "emmadavis@admin2.com",
                             FirstName = "Emma",
                             Gender = (byte)2,
@@ -2367,7 +2394,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 5L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7401),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8470),
                             Email = "williambrown@admin1.com",
                             FirstName = "William",
                             Gender = (byte)1,
@@ -2381,7 +2408,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 6L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7403),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8473),
                             Email = "oliviataylor@admin2.com",
                             FirstName = "Olivia",
                             Gender = (byte)2,
@@ -2395,7 +2422,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 7L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7404),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8476),
                             Email = "davidwilson@admin1.com",
                             FirstName = "David",
                             Gender = (byte)1,
@@ -2409,7 +2436,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 8L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7406),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8479),
                             Email = "sophiamartinez@admin2.com",
                             FirstName = "Sophia",
                             Gender = (byte)2,
@@ -2423,7 +2450,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 9L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7407),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8481),
                             Email = "jamesanderson@admin1.com",
                             FirstName = "James",
                             Gender = (byte)1,
@@ -2437,7 +2464,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 10L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7409),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8485),
                             Email = "avahernandez@admin2.com",
                             FirstName = "Ava",
                             Gender = (byte)2,
@@ -2451,7 +2478,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 11L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7410),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8488),
                             Email = "benjaminyoung@admin1.com",
                             FirstName = "Benjamin",
                             Gender = (byte)1,
@@ -2465,7 +2492,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 12L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7412),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8491),
                             Email = "mialopez@admin2.com",
                             FirstName = "Mia",
                             Gender = (byte)2,
@@ -2479,7 +2506,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 13L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7413),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8493),
                             Email = "danielgonzalez@admin1.com",
                             FirstName = "Daniel",
                             Gender = (byte)1,
@@ -2493,7 +2520,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 14L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7415),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8496),
                             Email = "isabellaperez@admin2.com",
                             FirstName = "Isabella",
                             Gender = (byte)2,
@@ -2507,7 +2534,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 15L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7416),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8498),
                             Email = "islom.karimov@admin1.com",
                             FirstName = "Islom",
                             Gender = (byte)1,
@@ -2520,22 +2547,8 @@ namespace Zeemlin.Data.Migrations
                         },
                         new
                         {
-                            Id = 16L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7417),
-                            Email = "noziman.yoldosheva@admin2.com",
-                            FirstName = "Nozima",
-                            Gender = (byte)2,
-                            LastName = "Yo'ldosheva",
-                            PassportSeria = "OP123456",
-                            Password = "hashed_password",
-                            SchoolId = 8L,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Username = "admin2_school4"
-                        },
-                        new
-                        {
                             Id = 17L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7421),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8500),
                             Email = "ethanmoore@admin1.com",
                             FirstName = "Ethan",
                             Gender = (byte)1,
@@ -2548,22 +2561,8 @@ namespace Zeemlin.Data.Migrations
                         },
                         new
                         {
-                            Id = 18L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7423),
-                            Email = "charlotterogers@admin2.com",
-                            FirstName = "Charlotte",
-                            Gender = (byte)2,
-                            LastName = "Rogers",
-                            PassportSeria = "EF567890",
-                            Password = "hashed_password",
-                            SchoolId = 9L,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Username = "admin2_school9"
-                        },
-                        new
-                        {
                             Id = 19L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7425),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8503),
                             Email = "alexanderscott@admin1.com",
                             FirstName = "Alexander",
                             Gender = (byte)1,
@@ -2577,7 +2576,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 20L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7426),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8506),
                             Email = "ameliagomez@admin2.com",
                             FirstName = "Amelia",
                             Gender = (byte)2,
@@ -2591,7 +2590,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 21L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7427),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8509),
                             Email = "henrywright@admin1.com",
                             FirstName = "Henry",
                             Gender = (byte)1,
@@ -2605,7 +2604,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 22L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7429),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8511),
                             Email = "sophieflores@admin2.com",
                             FirstName = "Sophie",
                             Gender = (byte)2,
@@ -2619,7 +2618,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 23L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7430),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8514),
                             Email = "liamsanchez@admin1.com",
                             FirstName = "Liam",
                             Gender = (byte)1,
@@ -2633,7 +2632,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 24L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7431),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8516),
                             Email = "gracechang@admin2.com",
                             FirstName = "Grace",
                             Gender = (byte)2,
@@ -2647,7 +2646,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 25L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7433),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8518),
                             Email = "cmwp@admin2.com",
                             FirstName = "mps",
                             Gender = (byte)2,
@@ -2673,18 +2672,21 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<byte>("Gender")
                         .HasColumnType("smallint");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("PassportSeria")
                         .IsRequired()
@@ -2693,7 +2695,8 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
@@ -2707,7 +2710,8 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -2719,7 +2723,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7490),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8635),
                             Email = "olimjon.torayev@director.com",
                             FirstName = "Olimjon",
                             Gender = (byte)1,
@@ -2733,7 +2737,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 2L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7494),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8642),
                             Email = "nodira.xolmirzayeva@director.com",
                             FirstName = "Nodira",
                             Gender = (byte)2,
@@ -2747,7 +2751,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 3L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7496),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8646),
                             Email = "sarvar.qosimov@director.com",
                             FirstName = "Sarvar",
                             Gender = (byte)1,
@@ -2761,7 +2765,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 4L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7500),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8649),
                             Email = "malika.azizova@director.com",
                             FirstName = "Malika",
                             Gender = (byte)2,
@@ -2775,7 +2779,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 5L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7501),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8652),
                             Email = "islom.karimov@director.com",
                             FirstName = "Islom",
                             Gender = (byte)1,
@@ -2789,7 +2793,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 6L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7503),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8656),
                             Email = "ikcmwopv@director.com",
                             FirstName = "mcpw",
                             Gender = (byte)1,
@@ -2818,8 +2822,7 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("DistrictName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -2834,8 +2837,7 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("GeneralAddressMFY")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<short>("HouseNumber")
                         .HasColumnType("smallint");
@@ -2852,10 +2854,12 @@ namespace Zeemlin.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Region")
+                        .HasColumnType("integer");
+
                     b.Property<string>("StreetName")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -2886,11 +2890,13 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("FatherName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -2912,11 +2918,15 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("Region")
+                        .HasColumnType("integer");
 
                     b.Property<string>("StreetName")
                         .IsRequired()
@@ -2951,18 +2961,21 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<byte>("Gender")
                         .HasColumnType("smallint");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("PassportSeria")
                         .IsRequired()
@@ -2971,14 +2984,16 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Username")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.HasKey("Id");
 
@@ -2988,7 +3003,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 1L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7295),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8281),
                             Email = "shahnozaodilova@gmail.com",
                             FirstName = "Shahnoza",
                             Gender = (byte)2,
@@ -3001,7 +3016,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 2L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7315),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8311),
                             Email = "moxi05@gmail.com",
                             FirstName = "Moxinur",
                             Gender = (byte)2,
@@ -3014,7 +3029,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 3L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7318),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8315),
                             Email = "akbarov@gmail.com",
                             FirstName = "Muhammadjon",
                             Gender = (byte)1,
@@ -3027,7 +3042,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 4L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7319),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8318),
                             Email = "ruxshona0@gmail.com",
                             FirstName = "Ruxshona",
                             Gender = (byte)2,
@@ -3040,7 +3055,7 @@ namespace Zeemlin.Data.Migrations
                         new
                         {
                             Id = 5L,
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7321),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8321),
                             Email = "kimdir@gmail.com",
                             FirstName = "Kimdir",
                             Gender = (byte)2,
@@ -3062,7 +3077,8 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Biography")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -3078,32 +3094,57 @@ namespace Zeemlin.Data.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("GeneralAddressMFY")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<short>("HouseNumber")
+                        .HasColumnType("smallint");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasColumnType("text");
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<int>("Region")
+                        .HasColumnType("integer");
+
                     b.Property<byte>("ScienceType")
                         .HasColumnType("smallint");
+
+                    b.Property<string>("StreetName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
 
                     b.Property<long?>("TeacherAssetId")
                         .HasColumnType("bigint");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
 
                     b.Property<byte>("genderType")
                         .HasColumnType("smallint");
@@ -3117,400 +3158,525 @@ namespace Zeemlin.Data.Migrations
                         {
                             Id = 1L,
                             Biography = "Experienced teacher in mathematics.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7554),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8770),
                             DateOfBirth = "1985.5.15",
                             DistrictName = "Mirzo Ulug'bek",
                             Email = "johnsmith@school.com",
                             FirstName = "John",
+                            GeneralAddressMFY = "Main Street",
+                            HouseNumber = (short)12,
                             LastName = "Smith",
                             Password = "hashed_password",
                             PhoneNumber = "+998900000001",
+                            Region = 1,
                             ScienceType = (byte)13,
+                            StreetName = "Oak Avenue",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "johnny",
                             genderType = (byte)1
                         },
                         new
                         {
                             Id = 2L,
                             Biography = "Passionate teacher specializing in history.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7559),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8780),
                             DateOfBirth = "1988.8.25",
-                            DistrictName = "Mirzo Ulug'bek",
+                            DistrictName = "Andijan City",
                             Email = "janedoe@school.com",
                             FirstName = "Jane",
+                            GeneralAddressMFY = "Downtown",
+                            HouseNumber = (short)20,
                             LastName = "Doe",
                             Password = "hashed_password",
                             PhoneNumber = "+998900000002",
+                            Region = 3,
                             ScienceType = (byte)4,
+                            StreetName = "Maple Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "janedoe",
                             genderType = (byte)2
                         },
                         new
                         {
                             Id = 3L,
                             Biography = "Dedicated teacher with expertise in geography.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7561),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8784),
                             DateOfBirth = "1980.1.10",
-                            DistrictName = "Eskishahar",
+                            DistrictName = "Fergana City",
                             Email = "michaeljohnson@school.com",
                             FirstName = "Michael",
+                            GeneralAddressMFY = "Central Avenue",
+                            HouseNumber = (short)8,
                             LastName = "Johnson",
                             Password = "hashed_password",
                             PhoneNumber = "+998900000003",
+                            Region = 5,
                             ScienceType = (byte)19,
+                            StreetName = "Pine Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "michaelj",
                             genderType = (byte)1
                         },
                         new
                         {
                             Id = 4L,
                             Biography = "Experienced Mathematics teacher with 10+ years of experience.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7594),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8789),
                             DateOfBirth = "1980.1.1",
-                            DistrictName = "Mirzo Ulug'bek",
+                            DistrictName = "Samarkand City",
                             Email = "umid.yoldoshev@school1.com",
                             FirstName = "Umid",
+                            GeneralAddressMFY = "Broadway",
+                            HouseNumber = (short)15,
                             LastName = "Yo'ldoshev",
                             Password = "hashed_password",
                             PhoneNumber = "+998901234567",
+                            Region = 11,
                             ScienceType = (byte)13,
+                            StreetName = "Cedar Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "umid.y",
                             genderType = (byte)1
                         },
                         new
                         {
                             Id = 5L,
-                            Biography = "Enthusiastic English language teacher with a passion for fostering communication skills.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7596),
-                            DateOfBirth = "1985.5.15",
-                            DistrictName = "Eskishahar",
-                            Email = "nodira.xojayeva@school2.com",
-                            FirstName = "Nodira",
-                            LastName = "Xo'jayeva",
+                            Biography = "Enthusiastic teacher with a passion for English language learning.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8793),
+                            DateOfBirth = "1990.2.1",
+                            DistrictName = "Namangan City",
+                            Email = "sarabrown@school.com",
+                            FirstName = "Sara",
+                            GeneralAddressMFY = "Park Avenue",
+                            HouseNumber = (short)24,
+                            LastName = "Brown",
                             Password = "hashed_password",
-                            PhoneNumber = "+998907890123",
+                            PhoneNumber = "+998904567890",
+                            Region = 4,
                             ScienceType = (byte)11,
+                            StreetName = "Elm Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "sara.b",
                             genderType = (byte)2
                         },
                         new
                         {
                             Id = 6L,
-                            Biography = "Experienced teacher specializing in chemistry.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7598),
-                            DateOfBirth = "1984.5.9",
-                            DistrictName = "Mirzo Ulug'bek",
-                            Email = "emilywilson@school.com",
-                            FirstName = "Emily",
-                            LastName = "Wilson",
+                            Biography = "Highly qualified teacher for Korean language courses.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8797),
+                            DateOfBirth = "1987.12.31",
+                            DistrictName = "Yangihayot",
+                            Email = "kimhan@school.com",
+                            FirstName = "Kim",
+                            GeneralAddressMFY = "University District",
+                            HouseNumber = (short)30,
+                            LastName = "Han",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000006",
-                            ScienceType = (byte)18,
+                            PhoneNumber = "+998908901234",
+                            Region = 2,
+                            ScienceType = (byte)7,
+                            StreetName = "Willow Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "kim.h",
                             genderType = (byte)2
                         },
                         new
                         {
                             Id = 7L,
-                            Biography = "Passionate teacher with expertise in art.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7600),
-                            DateOfBirth = "2000.9.4",
-                            DistrictName = "Mirzo Ulug'bek",
-                            Email = "daniellee@school.com",
-                            FirstName = "Daniel",
-                            LastName = "Lee",
+                            Biography = "Experienced teacher for Spanish language courses.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8800),
+                            DateOfBirth = "1978.9.22",
+                            DistrictName = "Termez",
+                            Email = "petergarcia@school.com",
+                            FirstName = "Peter",
+                            GeneralAddressMFY = "Old Town",
+                            HouseNumber = (short)18,
+                            LastName = "Garcia",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000007",
-                            ScienceType = (byte)1,
+                            PhoneNumber = "+998907890123",
+                            Region = 12,
+                            ScienceType = (byte)7,
+                            StreetName = "Birch Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "peter.g",
                             genderType = (byte)1
                         },
                         new
                         {
                             Id = 8L,
-                            Biography = "Dedicated teacher with a passion for music.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7603),
-                            DateOfBirth = "1986.7.5",
-                            DistrictName = "Eskishahar",
-                            Email = "avagarcia@school.com",
-                            FirstName = "Ava",
-                            LastName = "Garcia",
+                            Biography = "Dedicated teacher for Russian language instruction.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8811),
+                            DateOfBirth = "1982.6.14",
+                            DistrictName = "Navoiy City",
+                            Email = "alexeivolkov@school.com",
+                            FirstName = "Alexei",
+                            GeneralAddressMFY = "Industrial District",
+                            HouseNumber = (short)42,
+                            LastName = "Volkov",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000008",
-                            ScienceType = (byte)2,
+                            PhoneNumber = "+998909876543",
+                            Region = 9,
+                            ScienceType = (byte)10,
+                            StreetName = "Poplar Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            genderType = (byte)2
+                            Username = "alexei.v",
+                            genderType = (byte)1
                         },
                         new
                         {
                             Id = 9L,
-                            Biography = "Experienced mathematics teacher.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7604),
-                            DateOfBirth = "1984.3.19",
-                            DistrictName = "Eskishahar",
-                            Email = "noahmartinez@school.com",
-                            FirstName = "Noah",
-                            LastName = "Martinez",
+                            Biography = "Skilled teacher specializing in Uzbek language and literature.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8815),
+                            DateOfBirth = "1992.3.8",
+                            DistrictName = "Karshi City",
+                            Email = "fatima.abdullayeva@school.com",
+                            FirstName = "Fatima",
+                            GeneralAddressMFY = "City Center",
+                            HouseNumber = (short)55,
+                            LastName = "Abdullayeva",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000009",
-                            ScienceType = (byte)13,
+                            PhoneNumber = "+998901239876",
+                            Region = 8,
+                            ScienceType = (byte)6,
+                            StreetName = "Ash Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            genderType = (byte)1
+                            Username = "fatima.a",
+                            genderType = (byte)2
                         },
                         new
                         {
                             Id = 10L,
-                            Biography = "Passionate teacher specializing in biology.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7606),
-                            DateOfBirth = "1989.9.30",
-                            DistrictName = "Shahriston",
-                            Email = "ellalopez@school.com",
-                            FirstName = "Ella",
-                            LastName = "Lopez",
+                            Biography = "Energetic teacher with a passion for French language and culture.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8819),
+                            DateOfBirth = "1989.11.17",
+                            DistrictName = "Jizzakh City",
+                            Email = "emmanuelblanc@school.com",
+                            FirstName = "Emmanuel",
+                            GeneralAddressMFY = "New City",
+                            HouseNumber = (short)37,
+                            LastName = "Blanc",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000010",
-                            ScienceType = (byte)17,
+                            PhoneNumber = "+998905678901",
+                            Region = 7,
+                            ScienceType = (byte)9,
+                            StreetName = "Beech Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            genderType = (byte)2
+                            Username = "emmanuel.b",
+                            genderType = (byte)1
                         },
                         new
                         {
                             Id = 11L,
-                            Biography = "Experienced history teacher.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7608),
-                            DateOfBirth = "1981.12.10",
-                            DistrictName = "Shahriston",
-                            Email = "williamtaylor@school.com",
-                            FirstName = "William",
-                            LastName = "Taylor",
+                            Biography = "Enthusiastic teacher dedicated to Biology education.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8823),
+                            DateOfBirth = "1995.7.10",
+                            DistrictName = "Gulistan",
+                            Email = "ayeshakhan@school.com",
+                            FirstName = "Ayesha",
+                            GeneralAddressMFY = "University Area",
+                            HouseNumber = (short)11,
+                            LastName = "Khan",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000011",
-                            ScienceType = (byte)4,
+                            PhoneNumber = "+998902345678",
+                            Region = 13,
+                            ScienceType = (byte)17,
+                            StreetName = "Maple Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            genderType = (byte)1
-                        },
-                        new
-                        {
-                            Id = 12L,
-                            Biography = "Dedicated teacher with expertise in physics.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7609),
-                            DateOfBirth = "1992.11.12",
-                            DistrictName = "Namangan shahri",
-                            Email = "sofiahernandez@school.com",
-                            FirstName = "Sofia",
-                            LastName = "Hernandez",
-                            Password = "hashed_password",
-                            PhoneNumber = "+998900000012",
-                            ScienceType = (byte)16,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "ayesha.k",
                             genderType = (byte)2
                         },
                         new
                         {
-                            Id = 13L,
-                            Biography = "Passionate teacher specializing in algebra.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7611),
-                            DateOfBirth = "1982.12.17",
-                            DistrictName = "Namangan shahri",
-                            Email = "oliverscott@school.com",
-                            FirstName = "Oliver",
-                            LastName = "Scott",
+                            Id = 12L,
+                            Biography = "Experienced teacher for Chemistry courses.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8827),
+                            DateOfBirth = "1983.4.25",
+                            DistrictName = "Khiva",
+                            Email = "davidlee@school.com",
+                            FirstName = "David",
+                            GeneralAddressMFY = "Historic Center",
+                            HouseNumber = (short)29,
+                            LastName = "Lee",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000013",
-                            ScienceType = (byte)14,
+                            PhoneNumber = "+9989098765432",
+                            Region = 14,
+                            ScienceType = (byte)18,
+                            StreetName = "Elm Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "david.l",
                             genderType = (byte)1
                         },
                         new
                         {
-                            Id = 14L,
-                            Biography = "Dedicated History teacher with a strong emphasis on critical thinking skills.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7612),
-                            DateOfBirth = "1996.2.25",
-                            DistrictName = "Shahriston",
-                            Email = "sarvar.qosimov@school3.com",
-                            FirstName = "Sarvar",
-                            LastName = "Qosimov",
+                            Id = 13L,
+                            Biography = "Skilled teacher for Physics instruction.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8830),
+                            DateOfBirth = "1990.10.21",
+                            DistrictName = "Shahrisabz",
+                            Email = "mariagarcia@school.com",
+                            FirstName = "Maria",
+                            GeneralAddressMFY = "Old Town",
+                            HouseNumber = (short)61,
+                            LastName = "Garcia",
                             Password = "hashed_password",
-                            PhoneNumber = "+998909876543",
-                            ScienceType = (byte)4,
+                            PhoneNumber = "+9989087654321",
+                            Region = 8,
+                            ScienceType = (byte)16,
+                            StreetName = "Birch Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "maria.g",
+                            genderType = (byte)2
+                        },
+                        new
+                        {
+                            Id = 14L,
+                            Biography = "Dedicated teacher passionate about World History.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8834),
+                            DateOfBirth = "1986.5.12",
+                            DistrictName = "Bukhara City",
+                            Email = "omarsyed@school.com",
+                            FirstName = "Omar",
+                            GeneralAddressMFY = "City Center",
+                            HouseNumber = (short)74,
+                            LastName = "Syed",
+                            Password = "hashed_password",
+                            PhoneNumber = "+998906789012",
+                            Region = 6,
+                            ScienceType = (byte)4,
+                            StreetName = "Ash Street",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "omar.s",
                             genderType = (byte)1
                         },
                         new
                         {
                             Id = 15L,
                             Biography = "Skilled Uzbek language teacher passionate about preserving cultural heritage.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7614),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8837),
                             DateOfBirth = "2000.2.29",
-                            DistrictName = "Namangan shahri",
+                            DistrictName = "Namangan City",
                             Email = "malika.azizova@school4.com",
                             FirstName = "Malika",
+                            GeneralAddressMFY = "North Street",
+                            HouseNumber = (short)28,
                             LastName = "Azizova",
                             Password = "hashed_password",
                             PhoneNumber = "+998901239876",
+                            Region = 4,
                             ScienceType = (byte)6,
+                            StreetName = "Maple Avenue",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "malika.a",
                             genderType = (byte)2
                         },
                         new
                         {
                             Id = 16L,
                             Biography = "Experienced teacher specializing in geography.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7615),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8841),
                             DateOfBirth = "1994.6.29",
-                            DistrictName = "Namangan shahri",
+                            DistrictName = "Bukhara City",
                             Email = "emmaperez@school.com",
                             FirstName = "Emma",
+                            GeneralAddressMFY = "West Street",
+                            HouseNumber = (short)5,
                             LastName = "Perez",
                             Password = "hashed_password",
                             PhoneNumber = "+998900000016",
+                            Region = 6,
                             ScienceType = (byte)19,
+                            StreetName = "Elm Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "emmap",
                             genderType = (byte)2
                         },
                         new
                         {
                             Id = 17L,
                             Biography = "Passionate teacher with expertise in biology.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7617),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8844),
                             DateOfBirth = "1992.8.16",
-                            DistrictName = "Samarkand shahri",
+                            DistrictName = "Khiva",
                             Email = "lucasnguyen@school.com",
                             FirstName = "Lucas",
+                            GeneralAddressMFY = "South Street",
+                            HouseNumber = (short)10,
                             LastName = "Nguyen",
                             Password = "hashed_password",
                             PhoneNumber = "+998900000017",
+                            Region = 14,
                             ScienceType = (byte)17,
+                            StreetName = "Willow Avenue",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "lucas.n",
                             genderType = (byte)1
                         },
                         new
                         {
                             Id = 18L,
                             Biography = "Dedicated teacher with a passion for music.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7619),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8849),
                             DateOfBirth = "1993.10.4",
-                            DistrictName = "Samarkand shahri",
+                            DistrictName = "Chilonzor",
                             Email = "lilygonzalez@school.com",
                             FirstName = "Lily",
+                            GeneralAddressMFY = "East Street",
+                            HouseNumber = (short)20,
                             LastName = "Gonzalez",
                             Password = "hashed_password",
                             PhoneNumber = "+998900000018",
+                            Region = 2,
                             ScienceType = (byte)2,
+                            StreetName = "Poplar Avenue",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "lily.g",
                             genderType = (byte)2
                         },
                         new
                         {
                             Id = 19L,
                             Biography = "Experienced mathematics teacher.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7620),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8852),
                             DateOfBirth = "1993.10.4",
-                            DistrictName = "Yunusabad",
+                            DistrictName = "Andijan City",
                             Email = "jacksonadams@school.com",
                             FirstName = "Jackson",
+                            GeneralAddressMFY = "Central Street",
+                            HouseNumber = (short)36,
                             LastName = "Adams",
                             Password = "hashed_password",
                             PhoneNumber = "+998900000019",
+                            Region = 3,
                             ScienceType = (byte)13,
+                            StreetName = "Birch Avenue",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "jackson.a",
                             genderType = (byte)1
                         },
                         new
                         {
                             Id = 20L,
-                            Biography = "Passionate teacher specializing in physics.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7621),
-                            DateOfBirth = "1998.10.16",
-                            DistrictName = "Yunusabad",
-                            Email = "chloekim@school.com",
-                            FirstName = "Chloe",
-                            LastName = "Kim",
+                            Biography = "Experienced teacher with a strong background in Literature.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8855),
+                            DateOfBirth = "1975.12.24",
+                            DistrictName = "Denau",
+                            Email = "elenapetrova@school.com",
+                            FirstName = "Elena",
+                            GeneralAddressMFY = "Central District",
+                            HouseNumber = (short)9,
+                            LastName = "Petrova",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000020",
-                            ScienceType = (byte)16,
+                            PhoneNumber = "+998903456789",
+                            Region = 12,
+                            ScienceType = (byte)5,
+                            StreetName = "Oak Avenue",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "elena.p",
                             genderType = (byte)2
                         },
                         new
                         {
                             Id = 21L,
-                            Biography = "Experienced teacher with expertise in chemistry.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7623),
-                            DateOfBirth = "1990.7.14",
-                            DistrictName = "Navoiy shahri",
-                            Email = "ryanharris@school.com",
-                            FirstName = "Ryan",
-                            LastName = "Harris",
+                            Biography = "Enthusiastic teacher specializing in Information Technology.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8858),
+                            DateOfBirth = "1988.3.3",
+                            DistrictName = "Namangan City",
+                            Email = "ibrahimaliyev@school.com",
+                            FirstName = "Ibrahim",
+                            GeneralAddressMFY = "Eastern District",
+                            HouseNumber = (short)46,
+                            LastName = "Aliyev",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000021",
-                            ScienceType = (byte)18,
+                            PhoneNumber = "+9989098765431",
+                            Region = 4,
+                            ScienceType = (byte)21,
+                            StreetName = "Willow Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "ibrahim.a",
                             genderType = (byte)1
                         },
                         new
                         {
                             Id = 22L,
-                            Biography = "Passionate teacher specializing in algebra.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7624),
-                            DateOfBirth = "1989.10.13",
-                            DistrictName = "Navoiy shahri",
-                            Email = "madisonlopez@school.com",
-                            FirstName = "Madison",
-                            LastName = "Lopez",
+                            Biography = "Dedicated teacher passionate about teaching Algebra.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8861),
+                            DateOfBirth = "1991.8.19",
+                            DistrictName = "Fergana City",
+                            Email = "dilshodrakhmatov@school.com",
+                            FirstName = "Dilshod",
+                            GeneralAddressMFY = "Western District",
+                            HouseNumber = (short)23,
+                            LastName = "Rakhmatov",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000022",
-                            ScienceType = (byte)14,
+                            PhoneNumber = "+9989087654320",
+                            Region = 5,
+                            ScienceType = (byte)13,
+                            StreetName = "Maple Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            genderType = (byte)2
-                        },
-                        new
-                        {
-                            Id = 23L,
-                            Biography = "Dedicated teacher with a passion for art.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7626),
-                            DateOfBirth = "1997.1.1",
-                            DistrictName = "Termiz shahri",
-                            Email = "ethanwright@school.com",
-                            FirstName = "Ethan",
-                            LastName = "Wright",
-                            Password = "hashed_password",
-                            PhoneNumber = "+998900000023",
-                            ScienceType = (byte)1,
-                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "dilshod.r",
                             genderType = (byte)1
                         },
                         new
                         {
-                            Id = 24L,
-                            Biography = "Experienced teacher specializing in history.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7627),
-                            DateOfBirth = "1991.11.10",
-                            DistrictName = "Termiz shahri",
-                            Email = "averymartin@school.com",
-                            FirstName = "Avery",
-                            LastName = "Martin",
+                            Id = 23L,
+                            Biography = "Skilled teacher for Russin language courses.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8865),
+                            DateOfBirth = "1994.1.7",
+                            DistrictName = "Uchteppa",
+                            Email = "chloewang@school.com",
+                            FirstName = "Chloe",
+                            GeneralAddressMFY = "University District",
+                            HouseNumber = (short)82,
+                            LastName = "Wang",
                             Password = "hashed_password",
-                            PhoneNumber = "+998900000024",
-                            ScienceType = (byte)4,
+                            PhoneNumber = "+9989078901234",
+                            Region = 1,
+                            ScienceType = (byte)10,
+                            StreetName = "Birch Street",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "chloe.w",
                             genderType = (byte)2
+                        },
+                        new
+                        {
+                            Id = 24L,
+                            Biography = "Experienced teacher with a strong background in Islamic Studies.",
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8868),
+                            DateOfBirth = "1982.9.14",
+                            DistrictName = "Samarkand City",
+                            Email = "alimohammed@school.com",
+                            FirstName = "Ali",
+                            GeneralAddressMFY = "Old City",
+                            HouseNumber = (short)100,
+                            LastName = "Mohammed",
+                            Password = "hashed_password",
+                            PhoneNumber = "+9989067890123",
+                            Region = 11,
+                            ScienceType = (byte)2,
+                            StreetName = "Ash Street",
+                            UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "ali.m",
+                            genderType = (byte)1
                         },
                         new
                         {
                             Id = 25L,
                             Biography = "Passionate teacher specializing in information technology.",
-                            CreatedAt = new DateTime(2024, 4, 17, 10, 23, 40, 590, DateTimeKind.Utc).AddTicks(7629),
+                            CreatedAt = new DateTime(2024, 4, 30, 22, 7, 31, 634, DateTimeKind.Utc).AddTicks(8871),
                             DateOfBirth = "1993.10.4",
-                            DistrictName = "Termiz shahri",
+                            DistrictName = "Samarkand City",
                             Email = "harperthompson@school.com",
                             FirstName = "Harper",
+                            GeneralAddressMFY = "East Street",
+                            HouseNumber = (short)42,
                             LastName = "Thompson",
                             Password = "hashed_password",
                             PhoneNumber = "+998900000025",
+                            Region = 11,
                             ScienceType = (byte)21,
+                            StreetName = "Cedar Avenue",
                             UpdatedAt = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Username = "harper.t",
                             genderType = (byte)2
                         });
                 });
@@ -3550,11 +3716,19 @@ namespace Zeemlin.Data.Migrations
 
             modelBuilder.Entity("Zeemlin.Domain.Entities.Assets.SchoolAsset", b =>
                 {
+                    b.HasOne("Zeemlin.Domain.Entities.Users.Admin", "Admin")
+                        .WithMany()
+                        .HasForeignKey("AdminId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("Zeemlin.Domain.Entities.School", "School")
                         .WithMany("Asset")
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Admin");
 
                     b.Navigation("School");
                 });
@@ -3570,11 +3744,33 @@ namespace Zeemlin.Data.Migrations
                     b.Navigation("School");
                 });
 
+            modelBuilder.Entity("Zeemlin.Domain.Entities.Assets.StudentAward", b =>
+                {
+                    b.HasOne("Zeemlin.Domain.Entities.Users.Student", "Student")
+                        .WithMany("StudentAwards")
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Student");
+                });
+
             modelBuilder.Entity("Zeemlin.Domain.Entities.Assets.TeacherAsset", b =>
                 {
                     b.HasOne("Zeemlin.Domain.Entities.Users.Teacher", "Teacher")
                         .WithOne("TeacherAsset")
                         .HasForeignKey("Zeemlin.Domain.Entities.Assets.TeacherAsset", "TeacherId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Teacher");
+                });
+
+            modelBuilder.Entity("Zeemlin.Domain.Entities.Assets.TeacherAward", b =>
+                {
+                    b.HasOne("Zeemlin.Domain.Entities.Users.Teacher", "Teacher")
+                        .WithMany("TeacherAwards")
+                        .HasForeignKey("TeacherId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -3601,21 +3797,6 @@ namespace Zeemlin.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("School");
-                });
-
-            modelBuilder.Entity("Zeemlin.Domain.Entities.Events.Event", b =>
-                {
-                    b.HasOne("Zeemlin.Domain.Entities.Users.Parent", null)
-                        .WithMany("Events")
-                        .HasForeignKey("ParentId");
-
-                    b.HasOne("Zeemlin.Domain.Entities.Users.Student", null)
-                        .WithMany("Events")
-                        .HasForeignKey("StudentId");
-
-                    b.HasOne("Zeemlin.Domain.Entities.Users.Teacher", null)
-                        .WithMany("Events")
-                        .HasForeignKey("TeacherId");
                 });
 
             modelBuilder.Entity("Zeemlin.Domain.Entities.Events.EventRegistration", b =>
@@ -3776,14 +3957,6 @@ namespace Zeemlin.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Zeemlin.Domain.Entities.Users.Parent", null)
-                        .WithMany("Schools")
-                        .HasForeignKey("ParentId");
-
-                    b.HasOne("Zeemlin.Domain.Entities.Users.Student", null)
-                        .WithMany("Schools")
-                        .HasForeignKey("StudentId");
-
                     b.HasOne("Zeemlin.Domain.Entities.Users.SuperAdmin", null)
                         .WithMany("Schools")
                         .HasForeignKey("SuperAdminId");
@@ -3922,22 +4095,16 @@ namespace Zeemlin.Data.Migrations
 
             modelBuilder.Entity("Zeemlin.Domain.Entities.Users.Parent", b =>
                 {
-                    b.Navigation("Events");
-
                     b.Navigation("ParentStudents");
-
-                    b.Navigation("Schools");
                 });
 
             modelBuilder.Entity("Zeemlin.Domain.Entities.Users.Student", b =>
                 {
-                    b.Navigation("Events");
-
                     b.Navigation("LessonAttendances");
 
                     b.Navigation("ParentStudents");
 
-                    b.Navigation("Schools");
+                    b.Navigation("StudentAwards");
 
                     b.Navigation("StudentGroups");
                 });
@@ -3953,9 +4120,9 @@ namespace Zeemlin.Data.Migrations
 
             modelBuilder.Entity("Zeemlin.Domain.Entities.Users.Teacher", b =>
                 {
-                    b.Navigation("Events");
-
                     b.Navigation("TeacherAsset");
+
+                    b.Navigation("TeacherAwards");
 
                     b.Navigation("TeacherGroups");
                 });
