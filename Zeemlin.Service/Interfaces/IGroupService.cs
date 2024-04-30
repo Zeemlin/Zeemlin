@@ -9,9 +9,10 @@ public interface IGroupService
     Task<GroupForResultDto> RetrieveByIdAsync(long id);
     Task<GroupForResultDto> CreateAsync(GroupForCreationDto dto);
     Task<GroupForResultDto> ModifyAsync(long id, GroupForUpdateDto dto);
-    Task<IEnumerable<SearchGroupResultDto>> SearchGroupsAsync(string searchTerm);
     Task<IEnumerable<GroupForResultDto>> RetrieveAllAsync(PaginationParams @params);
     Task<IEnumerable<GroupForResultDto>> RetrieveGroupsBySchoolIdAsync(long schoolId);
+    Task<IEnumerable<GroupForResultDto>> GetMainTeacherGroupsAsync(long teacherId);
+    Task<IEnumerable<GroupForResultDto>> GetOtherTeacherGroupsAsync(long teacherId);
     Task<IEnumerable<SearchGroupResultDto>> SearchGroupsBySchoolIdAsync(string searchTerm, long schoolId);
 
 }
