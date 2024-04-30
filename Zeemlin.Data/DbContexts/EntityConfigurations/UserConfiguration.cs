@@ -14,11 +14,11 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.ToTable("SuperAdmins");
                 builder.HasKey(e => e.Id);
 
-                builder.Property(e => e.Username).IsRequired();
-                builder.Property(e => e.FirstName).IsRequired();
-                builder.Property(e => e.LastName).IsRequired();
-                builder.Property(e => e.Email).IsRequired();
-                builder.Property(e => e.Password).IsRequired();
+                builder.Property(e => e.Username).IsRequired().HasMaxLength(50);
+                builder.Property(e => e.FirstName).IsRequired().HasMaxLength(30);
+                builder.Property(e => e.LastName).IsRequired().HasMaxLength(30);
+                builder.Property(e => e.Email).IsRequired().HasMaxLength(50);
+                builder.Property(e => e.Password).IsRequired().HasMaxLength(30);
                 builder.Property(e => e.Gender).IsRequired();
                 builder.Property(e => e.PassportSeria).IsRequired().HasMaxLength(9);
 
@@ -55,10 +55,10 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.ToTable("Admins");
                 builder.HasKey(e => e.Id);
 
-                builder.Property(e => e.Username).IsRequired().HasMaxLength(30);
+                builder.Property(e => e.Username).IsRequired().HasMaxLength(50);
                 builder.Property(e => e.FirstName).IsRequired().HasMaxLength(30);
                 builder.Property(e => e.LastName).IsRequired().HasMaxLength(30);
-                builder.Property(e => e.Email).IsRequired().HasMaxLength(30);
+                builder.Property(e => e.Email).IsRequired().HasMaxLength(50);
                 builder.Property(e => e.Password).IsRequired().HasMaxLength(30);
                 builder.Property(e => e.Gender).IsRequired();
                 builder.Property(e => e.PassportSeria).IsRequired().HasMaxLength(9);
@@ -73,12 +73,12 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.ToTable("Teachers");
                 builder.HasKey(t => t.Id);
 
-                builder.Property(t => t.Username).IsRequired().HasMaxLength(30);
+                builder.Property(t => t.Username).IsRequired().HasMaxLength(50);
                 builder.Property(t => t.FirstName).IsRequired().HasMaxLength(30);
                 builder.Property(t => t.LastName).IsRequired().HasMaxLength(30);
                 builder.Property(t => t.DateOfBirth).IsRequired();
                 builder.Property(t => t.PhoneNumber).IsRequired();
-                builder.Property(t => t.Email).IsRequired().HasMaxLength(30);
+                builder.Property(t => t.Email).IsRequired().HasMaxLength(50);
                 builder.Property(t => t.Password).IsRequired().HasMaxLength(50);
                 builder.Property(t => t.Biography).HasMaxLength(200);
                 builder.Property(t => t.Region).IsRequired();
