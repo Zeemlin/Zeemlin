@@ -10,6 +10,7 @@ namespace Zeemlin.Service.DTOs.Users.Teachers
         public string FirstName { get; set; }
         [Required, MaxLength(50)]
         public string LastName { get; set; }
+        public string Username { get; set; }
         public string DateOfBirth { get; set; }
         [Phone(ErrorMessage = "Phone number is required")]
         public string PhoneNumber { get; set; }

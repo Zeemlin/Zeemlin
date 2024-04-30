@@ -1,16 +1,17 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using Zeemlin.Data.IRepositries;
-using Zeemlin.Domain.Entities.Users;
 using Zeemlin.Domain.Enums;
-using Zeemlin.Service.Commons.Extentions;
-using Zeemlin.Service.Configurations;
-using Zeemlin.Service.DTOs.Assets.TeacherAssets;
+using Zeemlin.Data.IRepositries;
+using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.DTOs.Group;
+using Microsoft.EntityFrameworkCore;
+using Zeemlin.Domain.Entities.Users;
+using Zeemlin.Service.Configurations;
+using Zeemlin.Service.Interfaces.Users;
+using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.DTOs.TeacherGroups;
 using Zeemlin.Service.DTOs.Users.Teachers;
-using Zeemlin.Service.Exceptions;
-using Zeemlin.Service.Interfaces.Users;
+using Zeemlin.Service.DTOs.Assets.TeacherAssets;
+using Zeemlin.Data.Repositories;
 
 namespace Zeemlin.Service.Services.Users;
 
@@ -18,16 +19,19 @@ public class TeacherService : ITeacherService
 {
     private readonly IMapper _mapper;
     private readonly ITeacherRepository _repository;
+    private readonly IGroupRepository _groupRepository;
     private readonly ISchoolRepository _schoolRepository;
 
     public TeacherService(
         IMapper mapper,
         ITeacherRepository repository,
-        ISchoolRepository schoolRepository)
+        ISchoolRepository schoolRepository,
+        IGroupRepository groupRepository)
     {
         _mapper = mapper;
         _repository = repository;
         _schoolRepository = schoolRepository;
+        _groupRepository = groupRepository;
     }
 
     public async Task<TeacherForResultDto> CreateAsync(TeacherForCreationDto dto)
@@ -48,6 +52,23 @@ public class TeacherService : ITeacherService
 
         return _mapper.Map<TeacherForResultDto>(created);
 
+    }
+
+    public async Task<IEnumerable<TeacherForResultDto>> GetTeachersAsync(long groupId)
+    {
+        var group = await _groupRepository.SelectAll()
+            .Include(g => g.TeacherGroups)
+                .ThenInclude(tg => tg.Teacher)
+            .Where(g => g.Id == groupId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (group is null)
+        {
+            throw new ZeemlinException(404, "Group not found");
+        }
+
+        return _mapper.Map<IEnumerable<TeacherForResultDto>>(group);
     }
 
     public async Task<TeacherForResultDto> ModifyAsync(long id, TeacherForUpdateDto dto)
@@ -133,7 +154,7 @@ public class TeacherService : ITeacherService
         return teacherDto;
     }
 
-    public async Task<IEnumerable<TeacherSearchResultDto>> SearchAsync(string searchTerm, long currentSchoolId)
+    public async Task<IEnumerable<TeacherSearchResultDto>> SearchByUsernameAsync(string searchTerm, long currentSchoolId)
     {
         if (string.IsNullOrEmpty(searchTerm))
         {
@@ -145,11 +166,7 @@ public class TeacherService : ITeacherService
         .AsNoTracking();
 
         // Rewrite query to use LIKE for case-insensitive comparison
-        query = query.Where(t =>
-           t.PhoneNumber.ToLower().Contains(searchTerm.ToLower())
-           ||
-           t.Email.ToLower().Contains(searchTerm.ToLower())
-        );
+        query = query.Where(t => t.Username.ToLower() == searchTerm.ToLower());
 
         // Filter by teachers associated with the current school
         query = query.Where(t => t.TeacherGroups.Any(tg => tg.Group.Course.SchoolId == currentSchoolId));
@@ -182,57 +199,6 @@ public class TeacherService : ITeacherService
                 UploadedDate = t.TeacherAsset.UploadedDate
             }
             : null // Set TeacherAssetForResultDto to null if not found
-        });
-    }
-
-
-    public async Task<IEnumerable<TeacherSearchForSuperAdmin>> SearchByPhoneOrEmailForSuperAdminsAsync(string searchTerm)
-    {
-        if (string.IsNullOrEmpty(searchTerm))
-        {
-            return Enumerable.Empty<TeacherSearchForSuperAdmin>(); // Handle empty search
-        }
-
-        var query = _repository.SelectAll()
-          .Include(t => t.TeacherAsset)
-          .Include(t => t.TeacherGroups) // Include TeacherGroups
-          .Where(t =>
-            t.PhoneNumber != null && t.PhoneNumber.ToLower().Contains(searchTerm.ToLower()) ||
-            t.Email != null && t.Email.ToLower().Contains(searchTerm.ToLower())
-          )
-          .AsNoTracking();
-
-        var teachers = await query.ToListAsync();
-
-        return teachers.Select(t => new TeacherSearchForSuperAdmin
-        {
-            Id = t.Id,
-            FirstName = t.FirstName,
-            LastName = t.LastName,
-            DateOfBirth = t.DateOfBirth, // Include if necessary (consider privacy implications)
-            PhoneNumber = t.PhoneNumber,
-            Email = t.Email,
-            Biography = t.Biography,
-            DistrictName = t.DistrictName,
-            ScienceType = t.ScienceType.ToString(),
-            genderType = t.genderType.ToString(), // Assuming you have a genderType property
-            CreatedAt = t.CreatedAt,
-            TotalGroupCount = t.TeacherGroups.Count(), // Calculate total group count
-            TeacherAssetForResultDto = t.TeacherAsset != null
-            ? new TeacherAssetForResultDto // Map only if TeacherAsset exists
-            {
-                Id = t.TeacherAsset.Id,
-                TeacherId = t.TeacherAsset.TeacherId,
-                Path = t.TeacherAsset.Path,
-                UploadedDate = t.TeacherAsset.UploadedDate
-            }
-            : null,
-            TeacherGroupForResult = t.TeacherGroups.Select(tg => new TeacherGroupForResultDto // Only include Id and Role
-            {
-                Id = tg.Id,
-                Role = tg.Role.ToString(),
-            })
-          .ToList()
         });
     }
 
