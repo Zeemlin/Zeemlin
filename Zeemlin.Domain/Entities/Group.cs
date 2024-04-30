@@ -8,7 +8,7 @@ public class Group : Auditable
     [Required]
     [StringLength(100)]
     public string Name { get; set; }
-    public string Description { get; set; }
+    public string? Description { get; set; }
     public long CourseId { get; set; }
     public Course Course { get; set; }
 

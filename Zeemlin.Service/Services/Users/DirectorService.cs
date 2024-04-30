@@ -168,7 +168,6 @@ public class DirectorService : IDirectorService
             schools = director.Schools != null ? director.Schools.Select(s => new SchoolForDirectorDto
             {
                 Id = s.Id,
-                SchoolNumber = s.SchoolNumber,
                 SchoolType = s.SchoolType.ToString(),
                 Name = s.Name,
                 Region = s.Region.ToString(),
@@ -212,7 +211,6 @@ public class DirectorService : IDirectorService
             schools = director.Schools != null ? director.Schools.Select(s => new SchoolForDirectorDto
             {
                 Id = s.Id,
-                SchoolNumber = s.SchoolNumber,
                 SchoolType = s.SchoolType.ToString(),
                 Name = s.Name,
                 Region = s.Region.ToString(),

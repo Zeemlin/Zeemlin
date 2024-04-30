@@ -219,20 +219,6 @@ public static class AdminSeedData
 
         yield return new Admin
         {
-            Id = 16,
-            CreatedAt = DateTime.UtcNow,
-            Username = "admin2_school4",
-            FirstName = "Nozima",
-            LastName = "Yo'ldosheva",
-            Email = "noziman.yoldosheva@admin2.com",
-            Password = "hashed_password",
-            Gender = GenderType.Female,
-            PassportSeria = "OP123456",
-            SchoolId = 8 
-        };
-
-        yield return new Admin
-        {
             Id = 17,
             CreatedAt = DateTime.UtcNow,
             Username = "admin1_school9",
@@ -245,19 +231,6 @@ public static class AdminSeedData
             SchoolId = 9
         };
 
-        yield return new Admin
-        {
-            Id = 18,
-            CreatedAt = DateTime.UtcNow,
-            Username = "admin2_school9",
-            FirstName = "Charlotte",
-            LastName = "Rogers",
-            Email = "charlotterogers@admin2.com",
-            Password = "hashed_password",
-            Gender = GenderType.Female,
-            PassportSeria = "EF567890",
-            SchoolId = 9
-        };
 
         yield return new Admin
         {

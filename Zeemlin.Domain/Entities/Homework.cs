@@ -6,7 +6,7 @@ namespace Zeemlin.Domain.Entities;
 public class Homework : Auditable
 {
     public string Title { get; set; } // Added
-    public string Description { get; set; }
+    public string? Description { get; set; }
     public string Deadline { get; set; }
     public long LessonId { get; set; } // Added
     public Lesson Lesson { get; set; } // Added

@@ -7,6 +7,7 @@ public class TeacherSearchResultDto
     public long Id { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    public string Username { get; set; }
 
     // Consider hiding DateOfBirth unless necessary for specific purposes
     public string DateOfBirth { get; set; }

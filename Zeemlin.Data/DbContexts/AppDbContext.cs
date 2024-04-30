@@ -38,6 +38,8 @@ namespace Zeemlin.Data.DbContexts
         public DbSet<SchoolAsset> SchoolAssets { get; set; }
         public DbSet<EventAsset> EventAssets { get; set; }
         public DbSet<TeacherAsset> TeacherAssets { get; set; }
+        public DbSet<TeacherAward> TeacherAwards { get; set; }
+        public DbSet<StudentAward> StudentAwards { get; set; }
         public DbSet<HomeworkAsset> HomeworkAssets { get; set; }
         public DbSet<QuestionAsset> QuestionAssets { get; set; }
 

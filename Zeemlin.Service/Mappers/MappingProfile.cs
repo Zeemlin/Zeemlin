@@ -44,7 +44,6 @@ public class MappingProfile : Profile
         CreateMap<Teacher, TeacherForUpdateDto>().ReverseMap();
         CreateMap<Teacher, TeacherForResultDto>().ReverseMap();
         CreateMap<Teacher, TeacherSearchResultDto>().ReverseMap();
-        CreateMap<Teacher, TeacherSearchForSuperAdmin>().ReverseMap();
         CreateMap<Teacher, FilteredTeacherDTO>();
 
         CreateMap<Parent, ParentForCreationDto>().ReverseMap();

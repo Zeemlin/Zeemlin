@@ -28,6 +28,8 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.ToTable("SchoolAssets");
                 builder.HasKey(e => e.Id);
 
+                builder.Property(e => e.Title).IsRequired().HasMaxLength(100);
+                builder.Property(e => e.Description).HasMaxLength(1000);
                 builder.Property(e => e.Path).IsRequired();
                 builder.Property(e => e.UploadedDate).IsRequired();
 
@@ -121,6 +123,38 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.HasOne(e => e.Lesson)
                     .WithMany(l => l.VideoLessons) // Lesson has many VideoLessonAssets
                     .HasForeignKey(e => e.LessonId);
+            }
+        }
+
+        public class StudentAwardConfiguration : IEntityTypeConfiguration<StudentAward>
+        {
+            public void Configure(EntityTypeBuilder<StudentAward> builder)
+            {
+                builder.ToTable("StudentAwards");
+                builder.HasKey(e => e.Id);
+
+                builder.Property(e => e.Path).IsRequired();
+                builder.Property(e => e.UploadedDate).IsRequired();
+
+                builder.HasOne(e => e.Student)
+                    .WithMany(s => s.StudentAwards)
+                    .HasForeignKey(e => e.StudentId);
+            }
+        }
+
+        public class TeacherAwardConfiguration : IEntityTypeConfiguration<TeacherAward>
+        {
+            public void Configure(EntityTypeBuilder<TeacherAward> builder)
+            {
+                builder.ToTable("TeacherAwards");
+                builder.HasKey(e => e.Id);
+
+                builder.Property(e => e.Path).IsRequired();
+                builder.Property(e => e.UploadedDate).IsRequired();
+
+                builder.HasOne(e => e.Teacher)
+                    .WithMany(t => t.TeacherAwards)
+                    .HasForeignKey(e => e.TeacherId);
             }
         }
     }

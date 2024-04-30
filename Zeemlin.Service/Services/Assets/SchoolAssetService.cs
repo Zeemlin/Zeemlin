@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Assets;
+using Zeemlin.Data.IRepositries.Users;
 using Zeemlin.Domain.Entities.Assets;
 using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.DTOs.Assets.SchoolAssets;
@@ -17,18 +17,21 @@ public class SchoolAssetService : ISchoolAssetService
     private readonly IMapper _mapper;
     private readonly ISchoolAssetRepository _repository;
     private readonly ISchoolRepository _schoolRepository;
+    private readonly IAdminRepository _adminRepository;
     private readonly long _maxSizeInBytes;
     private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".HEIC" };
 
     public SchoolAssetService(
         IMapper mapper,
         ISchoolAssetRepository repository,
-        ISchoolRepository schoolRepository)
+        ISchoolRepository schoolRepository,
+        IAdminRepository adminRepository)
     {
         _mapper = mapper;
         _repository = repository;
         _maxSizeInBytes = 10 * 1024 * 1024;
         _schoolRepository = schoolRepository;
+        _adminRepository = adminRepository;
     }
     private async Task ValidateImageAsync(IFormFile file)
     {
@@ -79,14 +82,23 @@ public class SchoolAssetService : ISchoolAssetService
 
     public async Task<SchoolAssetForResultDto> UploadAsync(SchoolAssetForCreationDto dto)
     {
-        var IsValidTeacherId = await _schoolRepository
+        var IsValidSchoolId = await _schoolRepository
             .SelectAll()
             .Where(h => h.Id == dto.SchoolId)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        if (IsValidTeacherId is null)
+        if (IsValidSchoolId is null)
             throw new ZeemlinException(404, "School not found");
+
+        var IsValidAdminId = await _adminRepository
+           .SelectAll()
+           .Where(h => h.Id == dto.AdminId)
+           .AsNoTracking()
+           .FirstOrDefaultAsync();
+
+        if (IsValidAdminId is null)
+            throw new ZeemlinException(404, "Admin not found");
 
         await ValidateImageAsync(dto.Path);
         var WwwRootPath = Path.Combine(WebHostEnviromentHelper.WebRootPath, "SchoolAssets");
