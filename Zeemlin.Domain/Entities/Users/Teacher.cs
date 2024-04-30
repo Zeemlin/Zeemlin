@@ -1,9 +1,6 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using Zeemlin.Domain.Enums;
 using Zeemlin.Domain.Commons;
 using Zeemlin.Domain.Entities.Assets;
-using Zeemlin.Domain.Entities.Events;
-using Zeemlin.Domain.Enums;
 
 namespace Zeemlin.Domain.Entities.Users;
 
@@ -11,23 +8,26 @@ public class Teacher : Auditable
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
+    public string Username { get; set; }
     public string DateOfBirth { get; set; }
-    [Phone]
     public string PhoneNumber { get; set; }
-    [EmailAddress]
     public string Email { get; set; }
-    [PasswordPropertyText]
     public string Password { get; set; }
     public string Biography { get; set; }
-    [Required]
-    [MaxLength(50)]
+
+    // Address
+    public Region Region { get; set; }
     public string DistrictName { get; set; }
+    public string GeneralAddressMFY { get; set; }
+    public string StreetName { get; set; }
+    public short HouseNumber { get; set; }
     public ScienceType ScienceType { get; set; }
     public GenderType genderType { get; set; }
 
     public long? TeacherAssetId { get; set; }
     public TeacherAsset? TeacherAsset { get; set; }
 
+
+    public ICollection<TeacherAward> TeacherAwards { get; set; }
     public ICollection<TeacherGroup> TeacherGroups { get; set; }
-    public ICollection<Event> Events { get; set; }
 }
