@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Zeemlin.Data.DbContexts;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Service.Commons.Extentions;
+using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Courses;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces;
@@ -13,13 +14,13 @@ public class CourseService : ICourseServices
 {
     private readonly IMapper _mapper;
     private readonly ICourseRepository _courseRepository;
-    private readonly AppDbContext _context;
+    private readonly ISchoolRepository _schoolRepository;
 
-    public CourseService(IMapper mapper, ICourseRepository courseRepository, AppDbContext context)
+    public CourseService(IMapper mapper, ICourseRepository courseRepository, ISchoolRepository schoolRepository)
     {
         _mapper = mapper;
         _courseRepository = courseRepository;
-        _context = context;
+        _schoolRepository = schoolRepository;
     }
 
 
@@ -38,16 +39,15 @@ public class CourseService : ICourseServices
             .FirstOrDefaultAsync();
 
         if (existingCourse is not null)
-        {
             throw new ZeemlinException(409, "Course with the same name already exists in this school.");
-        }
 
-        var IsValidSchoolNumber = await _context.School.FirstOrDefaultAsync(s => s.Id == dto.SchoolId);
+        var IsValidSchoolNumber = await _schoolRepository.SelectAll()
+            .Where(s => s.Id == dto.SchoolId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
 
         if (IsValidSchoolNumber is null)
             throw new ZeemlinException(404, "School Not Found");
-
-
 
         var mappedCourse = _mapper.Map<Course>(dto);
         mappedCourse.CreatedAt = DateTime.UtcNow;
@@ -77,9 +77,9 @@ public class CourseService : ICourseServices
             throw new ZeemlinException(409, "Course with the same name already exists in this school.");
         }
 
-        var school = await _courseRepository.SelectAll()
+        var school = await _schoolRepository.SelectAll()
             .AsNoTracking()
-            .Where(s => s.SchoolId == dto.SchoolId)
+            .Where(s => s.Id == dto.SchoolId)
             .FirstOrDefaultAsync();
 
         if (school is null)
@@ -106,24 +106,42 @@ public class CourseService : ICourseServices
         return true;
     }
 
-    public async Task<IEnumerable<CourseForResultDto>> RetrieveAllAsync()
+    public async Task<IEnumerable<CourseForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {
-        var courses = await _courseRepository.SelectAll().AsNoTracking().ToListAsync();
-        return _mapper.Map<IEnumerable<CourseForResultDto>>(courses);
+        var courses = await _courseRepository.SelectAll()
+          .Include(c => c.Groups) // Eager loading for groups
+          .AsNoTracking()
+          .ToPagedList(@params)
+          .ToListAsync();
+
+        var courseDtos = _mapper.Map<IEnumerable<CourseForResultDto>>(courses);
+        foreach (var courseDto in courseDtos)
+        {
+            courseDto.GroupCount = courseDto.GroupForResultDto?.Count ?? 0; // Existing logic for count
+        }
+
+        return courseDtos;
     }
+
 
 
     public async Task<CourseForResultDto> RetrieveIdAsync(long id)
     {
-        var IsValidId = await _courseRepository.SelectAll()
-            .AsNoTracking()
-            .Where(u => u.Id == id)
-            .FirstOrDefaultAsync();
+        var course = await _courseRepository.SelectAll()
+          .Include(c => c.Groups) // Eager loading for groups
+          .AsNoTracking()
+          .Where(u => u.Id == id)
+          .FirstOrDefaultAsync();
 
-        if (IsValidId is null)
+        if (course is null)
+        {
             throw new ZeemlinException(404, "Course not found");
+        }
 
-        return _mapper.Map<CourseForResultDto>(IsValidId);
+        var courseDto = _mapper.Map<CourseForResultDto>(course);
+        courseDto.GroupCount = course.Groups?.Count ?? 0; // Handle null groups
+
+        return courseDto;
     }
 
 }
