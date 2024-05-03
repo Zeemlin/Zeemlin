@@ -72,5 +72,31 @@ namespace Zeemlin.Api.Controllers
             var groups = await _groupService.GetOtherTeacherGroupsAsync(teacherId);
             return Ok(groups);
         }
+
+        // **GET** api/groups/course/{courseId} - Retrieves groups associated with a course
+        [HttpGet("course/{courseId}")]
+        public async Task<IActionResult> RetrieveGroupsByCourseIdAsync([FromRoute(Name = "courseId")] long courseId)
+        {
+            if (courseId <= 0)
+            {
+                return BadRequest(new ArgumentException("Course ID must be a positive value."));
+            }
+
+            var groups = await _groupService.RetrieveGroupsByCourseIdAsync(courseId);
+            return Ok(groups);
+        }
+
+        // **GET** api/groups/{groupId}/teachers - Retrieves teachers associated with a group
+        [HttpGet("{id}/teachers")]
+        public async Task<IActionResult> GetTeachersByGroupIdAsync([FromRoute(Name = "id")] long groupId)
+        {
+            if (groupId <= 0)
+            {
+                return BadRequest(new ArgumentException("Group ID must be a positive value."));
+            }
+
+            var teachers = await _groupService.GetTeachersByGroupIdAsync(groupId);
+            return Ok(teachers);
+        }
     }
 }
