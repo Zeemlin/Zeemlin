@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Entities.Users;
+using Zeemlin.Domain.Entities.Assets;
+using Zeemlin.Domain.Entities.Events;
 using Zeemlin.Service.DTOs.Grade;
 using Zeemlin.Service.DTOs.Group;
 using Zeemlin.Service.DTOs.Homework;
@@ -9,10 +12,8 @@ using Zeemlin.Service.DTOs.Schools;
 using Zeemlin.Service.DTOs.TeacherGroups;
 using Zeemlin.Service.DTOs.Subjects;
 using Zeemlin.Service.DTOs.Courses;
-using Zeemlin.Domain.Entities.Assets;
 using Zeemlin.Service.DTOs.Assets.HomeworkAssets;
 using Zeemlin.Service.DTOs.LessonAttendances;
-using Zeemlin.Domain.Entities.Users;
 using Zeemlin.Service.DTOs.Users.SuperAdmins;
 using Zeemlin.Service.DTOs.Users.Admins;
 using Zeemlin.Service.DTOs.Users.Directors;
@@ -20,7 +21,6 @@ using Zeemlin.Service.DTOs.Assets.SchoolAssets;
 using Zeemlin.Service.DTOs.Assets.TeacherAssets;
 using Zeemlin.Service.DTOs.Assets.SchoolLogoAssets;
 using Zeemlin.Service.DTOs.Assets.EventAssets;
-using Zeemlin.Domain.Entities.Events;
 using Zeemlin.Service.DTOs.Events;
 using Zeemlin.Service.DTOs.Users.Students;
 using Zeemlin.Service.DTOs.Users.Teachers;
@@ -28,6 +28,7 @@ using Zeemlin.Service.DTOs.Users.Parents;
 using Zeemlin.Service.DTOs.ParentStudents;
 using Zeemlin.Service.DTOs.Assets.VideoLessonAssets;
 using Zeemlin.Service.DTOs.Events.EventRegistrations;
+using Zeemlin.Service.DTOs.Assets.StudentAwards;
 
 namespace Zeemlin.Service.Mappers;
 
@@ -146,6 +147,9 @@ public class MappingProfile : Profile
         CreateMap<VideoLessonAsset, VideoLessonAssetForCreationDto>().ReverseMap();
         CreateMap<VideoLessonAsset, VideoLessonAssetForUpdateDto>().ReverseMap();
         CreateMap<VideoLessonAsset, VideoLessonAssetForResultDto>().ReverseMap();
+
+        CreateMap<StudentAward, StudentAwardForCreationDto>().ReverseMap();
+        CreateMap<StudentAward, StudentAwardForResultDto>().ReverseMap();
         #endregion
     }
 }

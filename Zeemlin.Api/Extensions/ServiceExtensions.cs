@@ -114,6 +114,9 @@ public static class ServiceExtensions
         services.AddScoped<IVideoLessonAssetRepository,  VideoLessonAssetRepository>();
         services.AddScoped<IVideoLessonAssetService, VideoLessonAssetService>();
 
+        services.AddScoped<IStudentAwardRepository, StudentAwardRepository>();
+        services.AddScoped<IStudentAwardService, StudentAwardService>();
+
     }
 
    
