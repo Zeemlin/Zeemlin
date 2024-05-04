@@ -21,7 +21,9 @@ public class SchoolSeedData
             StreetName = "Bog'ishamol ko'chasi",
             CallCenter = "+998900000001",
             EmailCenter = "TXM@school.com",
-            Website = "TXM.com"
+            Website = "TXM.com",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024,10,13)
         };
 
         yield return new School
@@ -38,8 +40,10 @@ public class SchoolSeedData
             StreetName = "Registon ko'chasi",
             CallCenter = "+998900000002",
             EmailCenter = "STI@school.com",
-            Website = "STI.com"
-           
+            Website = "STI.com",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
+
         };
 
         yield return new School
@@ -56,7 +60,9 @@ public class SchoolSeedData
             StreetName = "Pedagogika ko'chasi",
             CallCenter = "+998900000003",
             EmailCenter = "API@school.com",
-            Website = "API.com"
+            Website = "API.com",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
         yield return new School
@@ -73,7 +79,9 @@ public class SchoolSeedData
             StreetName = "Universitet ko'chasi",
             CallCenter = "+998900000004",
             EmailCenter = "NDU@school.com",
-            Website = "NDU.com"
+            Website = "NDU.com",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
         yield return new School
@@ -90,7 +98,9 @@ public class SchoolSeedData
             StreetName = "Language Street",
             CallCenter = "+998900000013",
             EmailCenter = "info@tltraining.com",
-            Website = "https://tltraining.com"
+            Website = "https://tltraining.com",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
         yield return new School
@@ -107,7 +117,9 @@ public class SchoolSeedData
             StreetName = "Computer Street",
             CallCenter = "+998900000014",
             EmailCenter = "info@sctc.uz",
-            Website = "https://sctc.uz"
+            Website = "https://sctc.uz",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
         yield return new School
@@ -124,7 +136,9 @@ public class SchoolSeedData
             StreetName = "Fitness Street",
             CallCenter = "+998900000015",
             EmailCenter = "info@navfit.com",
-            Website = "https://navfit.com"
+            Website = "https://navfit.com",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
         yield return new School
@@ -141,7 +155,9 @@ public class SchoolSeedData
             StreetName = "Photography Street",
             CallCenter = "+998900000016",
             EmailCenter = "info@sptc.uz",
-            Website = "https://sptc.uz"
+            Website = "https://sptc.uz",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
         yield return new School
@@ -158,7 +174,9 @@ public class SchoolSeedData
             StreetName = "Mustaqillik Avenue",
             CallCenter = "+998900000017",
             EmailCenter = "info@tltraining.com",
-            Website = "https://tltraining.com"
+            Website = "https://tltraining.com",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
         yield return new School
@@ -175,7 +193,9 @@ public class SchoolSeedData
             StreetName = "Amir Temur Street",
             CallCenter = "+998900000018",
             EmailCenter = "info@sctc.uz",
-            Website = "https://sctc.uz"
+            Website = "https://sctc.uz",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
         yield return new School
@@ -192,7 +212,9 @@ public class SchoolSeedData
             StreetName = "Olmazor Street",
             CallCenter = "+998900000019",
             EmailCenter = "info@navfit.com",
-            Website = "https://navfit.com"
+            Website = "https://navfit.com",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
         yield return new School
@@ -209,7 +231,9 @@ public class SchoolSeedData
             StreetName = "Shaxrisabz Street",
             CallCenter = "+998900000020",
             EmailCenter = "info@sptc.uz",
-            Website = "https://sptc.uz"
+            Website = "https://sptc.uz",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
         
         yield return new School
@@ -226,7 +250,9 @@ public class SchoolSeedData
             StreetName = "Shaxrisabz Street",
             CallCenter = "+998900000021",
             EmailCenter = "info@sptc.uz",
-            Website = "https://sptc.uz"
+            Website = "https://sptc.uz",
+            SchoolActivity = SchoolActivity.Active,
+            EndDateOfActivity = new DateTime(2024, 10, 13)
         };
 
     }

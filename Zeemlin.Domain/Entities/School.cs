@@ -28,6 +28,10 @@ public class School : Auditable
     public long? SchoolLogoAssetId { get; set; }
     public SchoolLogoAsset? SchoolLogoAsset { get; set; }
 
+    // School Activity
+    public SchoolActivity SchoolActivity { get; set; }
+    public DateTime EndDateOfActivity { get; set; }
+
 
     public ICollection<SchoolAsset> Asset { get; set; }
     public ICollection<Course> Courses { get; set; }

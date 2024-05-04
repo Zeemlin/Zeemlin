@@ -5,8 +5,7 @@ namespace Zeemlin.Service.DTOs.Schools;
 
 public class SchoolForCreationDto
 {
-    [Required] // Adjust MaxLength as needed
-    public long SchoolNumber { get; set; }
+    [Required] 
     public EducationType SchoolType { get; set; }
     [Required]
     [MaxLength(255)]
@@ -17,7 +16,8 @@ public class SchoolForCreationDto
     public long DirectorId { get; set; }
 
     // Address properties
-    public Region Region { get; set; } // nullable to allow omission when creating
+    [Required]
+    public Region Region { get; set; } 
 
     [Required]
     [MaxLength(50)]
@@ -35,4 +35,8 @@ public class SchoolForCreationDto
     public string? CallCenter { get; set; }
     public string? EmailCenter { get; set; }
     public string? Website { get; set; }
+
+    // School Activity
+    public SchoolActivity SchoolActivity { get; set; }
+    public DateTime EndDateOfActivity { get; set; }
 }

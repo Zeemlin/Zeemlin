@@ -26,6 +26,8 @@ public class SchoolConfiguration
             builder.Property(s => s.CallCenter);
             builder.Property(s => s.EmailCenter);
             builder.Property(s => s.Website).HasMaxLength(100);
+            builder.Property(s => s.SchoolActivity).IsRequired();
+            builder.Property(s => s.EndDateOfActivity).IsRequired();
 
             builder.HasMany(s => s.Asset)
               .WithOne(a => a.School)
