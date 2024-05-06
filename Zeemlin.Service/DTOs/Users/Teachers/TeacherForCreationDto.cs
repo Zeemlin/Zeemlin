@@ -21,11 +21,23 @@ namespace Zeemlin.Service.DTOs.Users.Teachers
         public string Email { get; set; }
         [StrongPassword]
         public string Password { get; set; }
-        public string Biography { get; set; }
+        public string? Biography { get; set; }
+
+        // Address
         [Required]
-        [MaxLength(50)]
+        public Region Region { get; set; }
+        [Required]
         public string DistrictName { get; set; }
+        [Required]
+        public string GeneralAddressMFY { get; set; }
+        [Required]
+        public string StreetName { get; set; }
+        [Required]
+        public short HouseNumber { get; set; }
+
+        [Required]
         public ScienceType ScienceType { get; set; }
+        [Required]
         public GenderType genderType { get; set; }
 
     }
