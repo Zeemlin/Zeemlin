@@ -134,6 +134,7 @@ public class GroupService : IGroupService
         var groupDto = _mapper.Map<GroupForResultDto>(group);
         var mainTeacher = group.TeacherGroups.FirstOrDefault(tg => tg.Role == TeacherRole.MainTeacher);
 
+        groupDto.CourseName = group.Course.Name;
         groupDto.TeacherFirstName = mainTeacher?.Teacher?.FirstName;
         groupDto.TeacherLastName = mainTeacher?.Teacher?.LastName;
         groupDto.TotalTeacherCount = group.TeacherGroups.Count();
