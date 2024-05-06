@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Users;
 using Zeemlin.Domain.Entities;

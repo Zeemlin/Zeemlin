@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.DbContexts;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.DTOs.StudentGroups;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces;
@@ -36,6 +37,11 @@ public class StudentGroupService : IStudentGroupService
 
         if (group is null)
             throw new ZeemlinException(404, "Group Not Found");
+
+        if (group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {group?.Course?.School ?.Name} is temporarily inactive. Unable to add students to {group.Name}");
+        }
 
         var student = await _studentRepository.SelectAll()
             .Where(s => s.Id == dto.StudentId)

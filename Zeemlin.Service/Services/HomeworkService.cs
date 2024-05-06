@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Assets.HomeworkAssets;
@@ -37,6 +38,11 @@ public class HomeworkService : IHomeworkService
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found.");
 
+        if (lesson?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"{lesson?.Group?.Course?.School?.Name} is temporarily inactive and homework cannot be created.");
+        }
+
         if (dto.Deadline < DateTime.Now)
         {
             throw new ZeemlinException(400, "Invalid date entered. DueTime cannot be in the past.");
@@ -65,6 +71,11 @@ public class HomeworkService : IHomeworkService
 
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found.");
+
+        if (lesson?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"{lesson?.Group?.Course?.School?.Name} is temporarily inactive and homework information cannot be changed.");
+        }
 
         if (dto.Deadline < DateTime.Now)
             throw new ZeemlinException(400, "Invalid date entered. DueTime cannot be in the past.");

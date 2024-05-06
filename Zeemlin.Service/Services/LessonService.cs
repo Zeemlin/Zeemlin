@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.DTOs.Lesson;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces;
@@ -37,6 +38,11 @@ public class LessonService : ILessonService
 
         if (group is null)
             throw new ZeemlinException(404, "Group not found");
+
+        if (group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"{group?.Course?.School?.Name} is temporarily inactive and lesson cannot be created.");
+        }
 
         var teacher = await teacherRepository.SelectAll()
             .Where(t => t.Id == dto.TeacherId)
@@ -86,6 +92,11 @@ public class LessonService : ILessonService
 
         if (group is null)
             throw new ZeemlinException(404, "Group not found");
+
+        if (group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"{group?.Course?.School?.Name} is temporarily inactive and lesson information cannot be changed");
+        }
 
         var teacher = await teacherRepository.SelectAll()
             .Where(t => t.Id == dto.TeacherId)
@@ -137,8 +148,6 @@ public class LessonService : ILessonService
 
         return _mapper.Map<IEnumerable<LessonForResultDto>>(lessons);
     }
-
-
 
     public async Task<LessonForResultDto> RetrieveIdAsync(long id)
     {

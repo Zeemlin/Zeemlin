@@ -40,6 +40,11 @@ public class GroupService : IGroupService
         if (course is null)
             throw new ZeemlinException(404, "Course not found");
 
+        if (course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {course?.School?.Name} is temporarily inactive. Group cannot be created.");
+        }
+
         var groupName = await _groupRepository.SelectAll()
             .Where(gn => gn.CourseId == dto.CourseId
             && gn.Name.ToLower() == dto.Name.ToLower())
@@ -73,6 +78,11 @@ public class GroupService : IGroupService
 
         if (course is null)
             throw new ZeemlinException(404, "Course not found");
+
+        if (course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {course?.School?.Name} is temporarily inactive. It is not possible to make changes to the {group.Name} group.");
+        }
 
         var groupNameUpdate = await _groupRepository.SelectAll()
             .Where(gn => gn.CourseId == dto.CourseId
@@ -345,6 +355,5 @@ public class GroupService : IGroupService
 
         return teachers;
     }
-
 
 }

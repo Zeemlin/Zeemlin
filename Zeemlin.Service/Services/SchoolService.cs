@@ -40,7 +40,7 @@ public class SchoolService : ISchoolService
 
         if (existingSchoolWithSameNameAndDistrict)
             throw new ZeemlinException
-                (409, $"A school with the same {dto.Name} already exists on that {dto.DistrictName} district.");
+                (409, $"A education with the same {dto.Name} already exists on that {dto.DistrictName} district.");
 
         var director = await _directorRepository.SelectAll()
             .Where(d => d.Id == dto.DirectorId)
@@ -69,6 +69,11 @@ public class SchoolService : ISchoolService
         if (school is null)
             throw new ZeemlinException(404, "School not found");
 
+        if (school?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive and school information cannot be changed.");
+        }
+
         var existingSchoolWithSameNameAndDistrict = await _schoolRepository
             .SelectAll()
             .Where(s => s.Name == dto.Name
@@ -78,7 +83,7 @@ public class SchoolService : ISchoolService
 
         if (existingSchoolWithSameNameAndDistrict)
             throw new ZeemlinException
-                (409, $"A school with the same {school.Name} already exists on that {school.DistrictName} district.");
+                (409, $"A education with the same {school.Name} already exists on that {school.DistrictName} district.");
 
         var director = await _directorRepository.SelectAll()
             .Where(d => d.Id == dto.DirectorId)
