@@ -30,10 +30,6 @@ public class SchoolService : ISchoolService
 
     public async Task<SchoolForResultDto> AddAsync(SchoolForCreationDto dto)
     {
-        if (dto.SchoolNumber <= 0)
-        {
-            throw new ZeemlinException(400, "Invalid school number");
-        }
 
         var existingSchoolWithSameNameAndDistrict = await _schoolRepository
             .SelectAll()
@@ -72,9 +68,6 @@ public class SchoolService : ISchoolService
 
         if (school is null)
             throw new ZeemlinException(404, "School not found");
-
-        if (dto.SchoolNumber < 0)
-            throw new ZeemlinException(400, "Invalid school number");
 
         var existingSchoolWithSameNameAndDistrict = await _schoolRepository
             .SelectAll()
@@ -188,6 +181,31 @@ public class SchoolService : ISchoolService
         });
 
         return schoolDtos;
+    }
+
+    public async Task<SchoolForResultDto> UpdateSchoolActivityAsync(long id, SchoolActivityForUpdateDto activityDto)
+    {
+        if (!Enum.IsDefined(typeof(SchoolActivity), activityDto.SchoolActivity))
+        {
+            throw new ArgumentException("Invalid school activity value.");
+        }
+
+        var school = await _schoolRepository.SelectAll()
+            .Where(s => s.Id == id)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (school is null)
+        {
+            throw new ZeemlinException(404, "School not found.");
+        }
+
+        var mapped = _mapper.Map(activityDto, school);
+        mapped.UpdatedAt = DateTime.UtcNow;
+        await _schoolRepository.UpdateAsync(school);
+
+        return _mapper.Map<SchoolForResultDto>(mapped);
+
     }
 
 }

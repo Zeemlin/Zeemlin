@@ -10,5 +10,6 @@ public interface ISchoolService
     Task<IEnumerable<SchoolForResultDto>> RetrieveAllAsync();
     Task<SchoolForResultDto> AddAsync(SchoolForCreationDto schoolDto);
     Task<SchoolForResultDto> ModifyAsync(long id, SchoolForUpdateDto schoolDto);
+    Task<SchoolForResultDto> UpdateSchoolActivityAsync(long id, SchoolActivityForUpdateDto activityDto);
     Task<IEnumerable<SchoolForResultDto>> FilterByRegionAsync(Region region, EducationType? schoolType = null);
 }
