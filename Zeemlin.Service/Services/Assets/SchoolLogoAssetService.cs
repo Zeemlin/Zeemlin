@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Assets;
 using Zeemlin.Domain.Entities.Assets;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.DTOs.Assets.SchoolLogoAssets;
 using Zeemlin.Service.Exceptions;
@@ -52,7 +53,7 @@ public class SchoolLogoAssetService : ISchoolLogoAssetService
            .Where(u => u.Id == Id)
            .FirstOrDefaultAsync();
         if (delete is null)
-            throw new ZeemlinException(404, "School Logo not found");
+            throw new ZeemlinException(404, "Education Logo not found");
 
         await _schoolLogoAssetRepository.DeleteAsync(Id);
 
@@ -73,7 +74,7 @@ public class SchoolLogoAssetService : ISchoolLogoAssetService
            .Where(u => u.Id == Id)
            .FirstOrDefaultAsync();
         if (getById is null)
-            throw new ZeemlinException(404, "School Asset not found");
+            throw new ZeemlinException(404, "Education Logo not found");
 
         return _mapper.Map<SchoolLogoAssetForResultDto>(getById);
     }
@@ -81,23 +82,19 @@ public class SchoolLogoAssetService : ISchoolLogoAssetService
     public async Task<SchoolLogoAssetForResultDto> UploadAsync(SchoolLogoAssetForCreationDto dto)
     {
         var school = await _schoolRepository.SelectAll()
-          .Include(s => s.SchoolLogoAsset) // Include SchoolLogoAsset in the query
+          .Include(s => s.SchoolLogoAsset) 
           .Where(s => s.Id == dto.SchoolId)
           .AsNoTracking()
           .FirstOrDefaultAsync();
 
         if (school is null)
-        {
             throw new ZeemlinException(404, "School not found");
-        }
 
-        // Check if a logo already exists for the school
+        if (school.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school.Name} is temporarily inactive and cannot upload a logo.");
+
         if (school.SchoolLogoAsset != null)
-        {
-            // Handle the conflict (e.g., throw an exception or update existing logo)
-            throw new ZeemlinException(409, "School already has a logo. Update existing logo or choose a different school.");
-        }
-
+            throw new ZeemlinException(409, "Education already has a logo. Update existing logo or choose a different school.");
 
         await ValidateImageAsync(dto.Path);
         var WwwRootPath = Path.Combine(WebHostEnviromentHelper.WebRootPath, "SchoolLogoAssets");
