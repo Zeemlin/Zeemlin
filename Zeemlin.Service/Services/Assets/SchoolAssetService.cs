@@ -4,7 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Assets;
 using Zeemlin.Data.IRepositries.Users;
+using Zeemlin.Domain.Entities;
 using Zeemlin.Domain.Entities.Assets;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.DTOs.Assets.SchoolAssets;
 using Zeemlin.Service.Exceptions;
@@ -19,7 +21,7 @@ public class SchoolAssetService : ISchoolAssetService
     private readonly ISchoolRepository _schoolRepository;
     private readonly IAdminRepository _adminRepository;
     private readonly long _maxSizeInBytes;
-    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".HEIC" };
+    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".heic" };
 
     public SchoolAssetService(
         IMapper mapper,
@@ -54,7 +56,7 @@ public class SchoolAssetService : ISchoolAssetService
            .Where(u => u.Id == Id)
            .FirstOrDefaultAsync();
         if (delete is null)
-            throw new ZeemlinException(404, "School Asset not found");
+            throw new ZeemlinException(404, "Education photo not found");
 
         await _repository.DeleteAsync(Id);
 
@@ -75,7 +77,7 @@ public class SchoolAssetService : ISchoolAssetService
            .Where(u => u.Id == Id)
            .FirstOrDefaultAsync();
         if (update is null)
-            throw new ZeemlinException(404, "School Asset not found");
+            throw new ZeemlinException(404, "Education photo not found");
 
         return _mapper.Map<SchoolAssetForResultDto>(update);
     }
@@ -89,7 +91,10 @@ public class SchoolAssetService : ISchoolAssetService
             .FirstOrDefaultAsync();
 
         if (IsValidSchoolId is null)
-            throw new ZeemlinException(404, "School not found");
+            throw new ZeemlinException(404, "Education not found");
+
+        if (IsValidSchoolId.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{IsValidSchoolId.Name} is temporarily inactive and cannot upload a photo.");
 
         var IsValidAdminId = await _adminRepository
            .SelectAll()

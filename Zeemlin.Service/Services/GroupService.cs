@@ -1,13 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
-using Zeemlin.Data.Repositories;
 using Zeemlin.Domain.Entities;
 using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Group;
-using Zeemlin.Service.DTOs.TeacherGroups;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces;
 
@@ -42,6 +40,11 @@ public class GroupService : IGroupService
         if (course is null)
             throw new ZeemlinException(404, "Course not found");
 
+        if (course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {course?.School?.Name} is temporarily inactive. Group cannot be created.");
+        }
+
         var groupName = await _groupRepository.SelectAll()
             .Where(gn => gn.CourseId == dto.CourseId
             && gn.Name.ToLower() == dto.Name.ToLower())
@@ -75,6 +78,11 @@ public class GroupService : IGroupService
 
         if (course is null)
             throw new ZeemlinException(404, "Course not found");
+
+        if (course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {course?.School?.Name} is temporarily inactive. It is not possible to make changes to the {group.Name} group.");
+        }
 
         var groupNameUpdate = await _groupRepository.SelectAll()
             .Where(gn => gn.CourseId == dto.CourseId
@@ -136,16 +144,9 @@ public class GroupService : IGroupService
         var groupDto = _mapper.Map<GroupForResultDto>(group);
         var mainTeacher = group.TeacherGroups.FirstOrDefault(tg => tg.Role == TeacherRole.MainTeacher);
 
+        groupDto.CourseName = group.Course.Name;
         groupDto.TeacherFirstName = mainTeacher?.Teacher?.FirstName;
         groupDto.TeacherLastName = mainTeacher?.Teacher?.LastName;
-
-        groupDto.GroupData = group.TeacherGroups.Select(tg => new GroupDataResultDto
-        {
-            TeacherFirstName = tg.Teacher?.FirstName,
-            TeacherLastName = tg.Teacher?.LastName,
-            ScienceType = tg.Teacher?.ScienceType.ToString(),
-        }).ToList();
-
         groupDto.TotalTeacherCount = group.TeacherGroups.Count();
         groupDto.StudentCount = group.StudentGroups.Count();
 
@@ -153,7 +154,7 @@ public class GroupService : IGroupService
     }
 
 
-    // Educationning guruhlarini qidirish uchun
+    // Educationning guruhlarini qidirish uchun method
     public async Task<IEnumerable<SearchGroupResultDto>> SearchGroupsBySchoolIdAsync(string searchTerm, long schoolId)
     {
         if (string.IsNullOrEmpty(searchTerm))
@@ -251,14 +252,6 @@ public class GroupService : IGroupService
 
             groupDto.TeacherFirstName = mainTeacher?.Teacher?.FirstName;
             groupDto.TeacherLastName = mainTeacher?.Teacher?.LastName;
-
-            groupDto.GroupData = group.TeacherGroups.Select(tg => new GroupDataResultDto
-            {
-                TeacherFirstName = tg.Teacher?.FirstName,
-                TeacherLastName = tg.Teacher?.LastName,
-                ScienceType = tg.Teacher?.ScienceType.ToString(),
-            }).ToList();
-
             groupDto.TotalTeacherCount = group.TeacherGroups.Count();
             groupDto.StudentCount = group.StudentGroups.Count();
 
@@ -268,6 +261,7 @@ public class GroupService : IGroupService
         return groupDtos;
     }
 
+    // Ustoz rahbarlik qiladigan guruhlarni qaytaruvchi method
     public async Task<IEnumerable<GroupForResultDto>> GetMainTeacherGroupsAsync(long teacherId)
     {
         var teacherGroups = await _groupRepository.SelectAll()
@@ -279,6 +273,7 @@ public class GroupService : IGroupService
         return _mapper.Map<IEnumerable<GroupForResultDto>>(teacherGroups);
     }
 
+    // Ustoz rahbarlik qilmaydigan guruhlar qaytaruvchi method
     public async Task<IEnumerable<GroupForResultDto>> GetOtherTeacherGroupsAsync(long teacherId)
     {
         var teacherGroups = await _groupRepository.SelectAll()
@@ -290,5 +285,75 @@ public class GroupService : IGroupService
         return _mapper.Map<IEnumerable<GroupForResultDto>>(teacherGroups);
     }
 
+    // Shu coursega tegishli bo'lgan guruhlarni qaytaruvchi method
+    public async Task<IEnumerable<GroupForResultDto>> RetrieveGroupsByCourseIdAsync(long courseId)
+    {
+        if (courseId <= 0)
+        {
+            throw new ArgumentException("Course ID must be a positive value.");
+        }
+
+        var groups = await _groupRepository.SelectAll()
+          .Include(g => g.TeacherGroups)
+            .ThenInclude(tg => tg.Teacher)
+          .Include(g => g.Course)
+          .Include(g => g.StudentGroups)
+          .Where(g => g.CourseId == courseId)
+          .AsNoTracking()
+          .ToListAsync();
+
+        var groupDtos = groups.Select(group =>
+        {
+            var groupDto = _mapper.Map<GroupForResultDto>(group);
+            var mainTeacher = group.TeacherGroups.FirstOrDefault(tg => tg.Role == TeacherRole.MainTeacher);
+
+            groupDto.TeacherFirstName = mainTeacher?.Teacher?.FirstName;
+            groupDto.TeacherLastName = mainTeacher?.Teacher?.LastName;
+            groupDto.TotalTeacherCount = group.TeacherGroups.Count();
+            groupDto.StudentCount = group.StudentGroups.Count();
+
+            return groupDto;
+        }).ToList();
+
+        return groupDtos;
+    }
+
+    // Shu guruh uchun dars o'tadigan ustozlarni qaytaruvchi method va dto
+    public async Task<IEnumerable<TeacherForGroupDto>> GetTeachersByGroupIdAsync(long groupId)
+    {
+        if (groupId <= 0)
+        {
+            throw new ArgumentException("Group ID must be a positive value.");
+        }
+
+        var group = await _groupRepository.SelectAll()
+            .Include(g => g.TeacherGroups)
+              .ThenInclude(tg => tg.Teacher)
+                .ThenInclude(t => t.TeacherAsset) // Include TeacherAsset
+            .Where(g => g.Id == groupId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (group is null)
+        {
+            throw new ZeemlinException(404, "Group Not Found");
+        }
+
+        var teachers = group.TeacherGroups.Select(tg =>
+        {
+            var profilePictureUrl = tg.Teacher.TeacherAsset?.Path; // Use null-conditional operator
+            return new TeacherForGroupDto
+            {
+                Id = tg.TeacherId,
+                Username = tg.Teacher.Username,
+                FirstName = tg.Teacher.FirstName,
+                LastName = tg.Teacher.LastName,
+                ProfilePictureUrl = profilePictureUrl, // Assign profile picture URL if it exists
+                ScienceType = tg.Teacher.ScienceType.ToString(),
+            };
+        }).ToList();
+
+        return teachers;
+    }
 
 }

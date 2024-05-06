@@ -38,7 +38,8 @@ public class TeacherService : ITeacherService
     {
         var TeacherEmailExist = await _repository.SelectAll()
             .AsNoTracking()
-            .Where(t => t.Email.ToLower() == dto.Email.ToLower()
+            .Where(t => t.Username.ToLower() == dto.Username.ToLower() 
+            || t.Email.ToLower() == dto.Email.ToLower()
             || t.PhoneNumber == dto.PhoneNumber)
             .FirstOrDefaultAsync();
 

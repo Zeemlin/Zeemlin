@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Users;
 using Zeemlin.Domain.Entities.Users;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Schools;
@@ -64,6 +65,10 @@ public class AdminService : IAdminService
         if (IsValidSchoolNumber is null)
             throw new ZeemlinException(404, "School Not Found");
 
+        if (IsValidSchoolNumber?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {IsValidSchoolNumber?.Name} is temporarily inactive. Admin cannot be created.");
+        }
 
         var mapped = _mapper.Map<Admin>(dto);
         mapped.CreatedAt = DateTime.UtcNow;
@@ -109,14 +114,18 @@ public class AdminService : IAdminService
         if (IsValidPassportSeria is not null)
             throw new ZeemlinException(404, "PassportSeria already exists");
 
-        var IsValidSchoolNumber = await _adminRepository
-            .SelectAll()
+        var IsValidSchoolNumber = await _schoolRepository.SelectAll()
+            .Where(s => s.Id == dto.SchoolId)
             .AsNoTracking()
-            .Where(s => s.SchoolId == dto.SchoolId)
             .FirstOrDefaultAsync();
 
         if (IsValidSchoolNumber is null)
             throw new ZeemlinException(404, "School Not Found");
+
+        if (IsValidSchoolNumber?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {IsValidSchoolNumber?.Name} is temporarily inactive. Admin information cannot be changed.");
+        }
 
         var mapped = _mapper.Map(dto, IsValidId);
         mapped.UpdatedAt = DateTime.UtcNow;
@@ -147,9 +156,6 @@ public class AdminService : IAdminService
             a.Email.Contains(searchTerm));
         return await query.ToListAsync();
     }
-
-
-
 
     public async Task<IEnumerable<AdminForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {

@@ -8,6 +8,6 @@ public class SchoolAssetForCreationDto
     public long SchoolId { get; set; }
     public long AdminId { get; set; }
     public string Title { get; set; }
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
 }

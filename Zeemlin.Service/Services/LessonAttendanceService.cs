@@ -29,8 +29,6 @@ namespace Zeemlin.Service.Services
             _lessonAttendanceRepository = lessonAttendanceRepository;
         }
 
-
-
         public async Task<LessonAttendanceForResultDto> CreateAsync(LessonAttendanceForCreationDto dto)
         {
             var lesson = await _lessonRepository

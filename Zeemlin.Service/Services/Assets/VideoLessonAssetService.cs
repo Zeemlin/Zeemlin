@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Assets;
 using Zeemlin.Domain.Entities.Assets;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.Configurations;
@@ -42,7 +43,7 @@ public class VideoLessonAssetService : IVideoLessonAssetService
         var extension = Path.GetExtension(file.FileName).ToLower();
         if (!_allowedExtensions.Contains(extension))
         {
-            throw new ZeemlinException(400, "Invalid image format. Only jpg, jpeg, and png are allowed.");
+            throw new ZeemlinException(400, "Invalid image format. Only mp4, mkv, mov, webm, avi, ogv  are allowed.");
         }
 
     }
@@ -105,6 +106,11 @@ public class VideoLessonAssetService : IVideoLessonAssetService
 
         if (IsLessonId is null)
             throw new ZeemlinException(404, "Lesson not found");
+
+        if (IsLessonId?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {IsLessonId?.Group?.Course?.School?.Name} is temporarily inactive and the video cannot be uploaded");
+        }
 
         await ValidateImageAsync(dto.Path);
         var WwwRootPath = Path.Combine(WebHostEnviromentHelper.WebRootPath, "VideoLessonAssets");

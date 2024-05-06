@@ -1,10 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Zeemlin.Data.DbContexts;
 using Zeemlin.Data.IRepositries.Users;
 using Zeemlin.Domain.Entities.Users;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Configurations;
+using Zeemlin.Service.DTOs.Schools;
 using Zeemlin.Service.DTOs.Users.Directors;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces.Users;
@@ -141,13 +141,11 @@ public class DirectorService : IDirectorService
         return _mapper.Map<IEnumerable<DirectorForResultDto>>(directors);
     }
 
-
-
-
     public async Task<DirectorForResultDto> RetrieveByIdAsync(long id)
     {
         var director = await _repository.SelectAll()
-            .Include(d => d.Schools) 
+            .Include(d => d.Schools)
+            .ThenInclude(s => s.SchoolLogoAsset) // Include SchoolLogoAsset
             .AsNoTracking()
             .Where(d => d.Id == id)
             .FirstOrDefaultAsync();
@@ -155,41 +153,21 @@ public class DirectorService : IDirectorService
         if (director is null)
             throw new ZeemlinException(404, "Not Found");
 
-        return new DirectorForResultDto
-        {
-            Id = director.Id,
-            Username = director.Username,
-            FirstName = director.FirstName,
-            LastName = director.LastName,
-            Email = director.Email,
-            PhoneNumber = director.PhoneNumber,
-            Gender = director.Gender.ToString(),
-            PassportSeria = director.PassportSeria,
-            schools = director.Schools != null ? director.Schools.Select(s => new SchoolForDirectorDto
-            {
-                Id = s.Id,
-                SchoolType = s.SchoolType.ToString(),
-                Name = s.Name,
-                Region = s.Region.ToString(),
-                DistrictName = s.DistrictName,
-                GeneralAddressMFY = s.GeneralAddressMFY,
-                StreetName = s.StreetName
-            }).ToList() : null
-        };
+        var result = _mapper.Map<DirectorForResultDto>(director);
+        result.Schools = director.Schools != null
+            ? _mapper.Map<ICollection<SchoolForResultDto>>(director.Schools)
+            : null;
+
+        return result;
     }
 
-
-    public async Task<IEnumerable<DirectorForResultDto>> RetrieveByUsernameAsync(string search, AppDbContext context)
+    public async Task<IEnumerable<DirectorForResultDto>> RetrieveByUsernameAsync(string search, PaginationParams @params)
     {
         // Use Include method for eager loading
-        var directors = await context.Directors
-            .Include(d => d.Schools) // Include the School navigation property
+        var directors = await _repository.SelectAll() // Include the School navigation property
+            .Where(a => a.Username.Contains(search))
             .AsNoTracking()
-            .Where(a =>
-                a.Username.Contains(search) ||
-                a.PassportSeria.Contains(search) ||
-                a.Email.Contains(search) ||
-                a.PhoneNumber.Contains(search))
+            .ToPagedList(@params)
             .ToListAsync();
 
         if (!directors.Any()) // Check if any directors found
@@ -197,28 +175,9 @@ public class DirectorService : IDirectorService
             throw new ZeemlinException(404, "Not Found");
         }
 
-        // Map to DirectorForResultDto with SchoolForDirectorDto
-        return directors.Select(director => new DirectorForResultDto
-        {
-            Id = director.Id,
-            Username = director.Username,
-            FirstName = director.FirstName,
-            LastName = director.LastName,
-            Email = director.Email,
-            PhoneNumber = director.PhoneNumber,
-            Gender = director.Gender.ToString(),
-            PassportSeria = director.PassportSeria,
-            schools = director.Schools != null ? director.Schools.Select(s => new SchoolForDirectorDto
-            {
-                Id = s.Id,
-                SchoolType = s.SchoolType.ToString(),
-                Name = s.Name,
-                Region = s.Region.ToString(),
-                DistrictName = s.DistrictName,
-                GeneralAddressMFY = s.GeneralAddressMFY,
-                StreetName = s.StreetName
-            }).ToList() : null
-        });
+        var result = _mapper.Map<IEnumerable<DirectorForResultDto>>(directors);
+
+        return result;
     }
 
 }

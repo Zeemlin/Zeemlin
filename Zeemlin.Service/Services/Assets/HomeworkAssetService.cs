@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Assets;
+using Zeemlin.Domain.Entities;
 using Zeemlin.Domain.Entities.Assets;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.DTOs.Assets.HomeworkAssets;
 using Zeemlin.Service.Exceptions;
@@ -17,7 +19,7 @@ public class HomeworkAssetService : IHomeworkAssetService
     private readonly long _maxSizeInBytes; // Faylning maximal hajmi
     private readonly IHomeworkAssetRepository _repository;
     private readonly IHomeworkRepository _homeworkRepository;
-    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", // Photo formatlar
+    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".heic", // Photo formatlar
         ".pdf", ".csv", // Document formatlar
         ".docx", ".txt", ".pptx", ".ppt", ".xlsx", // Windows ilovalarining fayl formatlari
         ".mp3", ".wav", // Audio formatlar
@@ -29,7 +31,7 @@ public class HomeworkAssetService : IHomeworkAssetService
         _mapper = mapper;
         _repository = repository;
         _homeworkRepository = homeworkRepository;
-        _maxSizeInBytes = 100 * 1024 * 1024; // Fayl maximal hajmi 100MB
+        _maxSizeInBytes = 10 * 1024 * 1024; // Fayl maximal hajmi 10MB
     }
 
     private async Task ValidateImageAsync(IFormFile file)
@@ -42,7 +44,7 @@ public class HomeworkAssetService : IHomeworkAssetService
         var extension = Path.GetExtension(file.FileName).ToLower();
         if (!_allowedExtensions.Contains(extension))
         {
-            throw new ZeemlinException(400, "Invalid format. Only jpg, jpeg, png, pdf, csv, docx, txt, pptx, ppt, xlsx, mp3, wav, mp4, mkv are allowed.");
+            throw new ZeemlinException(400, "Invalid format. Only jpg, jpeg, png, heic, pdf, csv, docx, txt, pptx, ppt, xlsx, mp3, wav, mp4, mkv are allowed.");
         }
 
     }
@@ -58,6 +60,11 @@ public class HomeworkAssetService : IHomeworkAssetService
         if (IsValidHomeworkId is null)
             throw new ZeemlinException(404, "Homework not found");
 
+        // Maktab faol ekanligini tekshirish
+        if (IsValidHomeworkId.Lesson?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {IsValidHomeworkId.Lesson?.Group?.Course?.School?.Name} associated with this homework is temporarily inactive and cannot upload file.");
+        }
         // 1ta uyga vazifa uchun 10 ta fayl yuklanganini tekshirish
         var existingAssetCount = await _repository.CountAsync(a => a.HomeworkId == dto.HomeworkId);
         if (existingAssetCount >= 10)

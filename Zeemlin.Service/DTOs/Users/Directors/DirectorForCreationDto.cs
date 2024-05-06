@@ -15,7 +15,7 @@ public class DirectorForCreationDto
     [Required(ErrorMessage = "Email is required")]
     [EmailAttribute]
     public string Email { get; set; }
-    [PhoneAttribute]
+    [PhoneNumber]
     public string PhoneNumber { get; set; }
     [Required]
     [StrongPassword]

@@ -13,6 +13,6 @@ public class DirectorForResultDto
     public string Gender { get; set; }
     public string PassportSeria { get; set; }
 
-    public ICollection<SchoolForDirectorDto> schools { get; set; }
+    public ICollection<SchoolForResultDto> Schools { get; set; }
 
 }

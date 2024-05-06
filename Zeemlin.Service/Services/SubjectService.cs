@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Lesson;
@@ -36,6 +37,10 @@ public class SubjectService : ISubjectService
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found");
 
+        if (lesson?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"{lesson?.Group?.Course?.School?.Name} is temporarily inactive. Subject cannot be created.");
+        }
 
         var mapped = _mapper.Map<Subject>(dto);
         mapped.CreatedAt = DateTime.UtcNow;
@@ -61,6 +66,11 @@ public class SubjectService : ISubjectService
             .FirstOrDefaultAsync();
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found");
+
+        if (lesson?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"{lesson?.Group?.Course?.School?.Name} is temporarily inactive. Subject information cannot be changed.");
+        }
 
         var mappedsubject = _mapper.Map(dto, update);
         mappedsubject.UpdatedAt = DateTime.UtcNow;

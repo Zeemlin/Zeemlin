@@ -1,5 +1,4 @@
-﻿using Zeemlin.Domain.Enums;
-using Zeemlin.Service.DTOs.StudentGroups;
+﻿using Zeemlin.Service.DTOs.StudentGroups;
 
 namespace Zeemlin.Service.DTOs.Users.Students;
 
@@ -16,6 +15,7 @@ public class StudentForResultDto
     public string Email { get; set; }
 
     // Address
+    public string Region { get; set; }
     public string DistrictName { get; set; }
     public string GeneralAddressMFY { get; set; }
     public string StreetName { get; set; }
