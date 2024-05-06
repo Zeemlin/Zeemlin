@@ -10,4 +10,5 @@ public interface ICourseServices
     public Task<CourseForResultDto> CreateAsync(CourseForCreationDto dto);
     public Task<CourseForResultDto> ModifyAsync(long id, CourseForUpdateDto dto);
     public Task<IEnumerable<CourseForResultDto>> RetrieveAllAsync(PaginationParams @params);
+    Task<IEnumerable<CourseForResultDto>> RetrieveAllBySchoolIdAsync(long schoolId, PaginationParams @params);
 }

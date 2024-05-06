@@ -34,4 +34,16 @@ public class CoursesController : BaseController
     public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long id, [FromBody] CourseForUpdateDto dto)
         => Ok(await this.courseServices.ModifyAsync(id, dto));
 
+    [HttpGet("by-school/{schoolId}")]
+    public async Task<IActionResult> GetBySchoolAsync([FromRoute(Name = "schoolId")] long schoolId, [FromQuery] PaginationParams @params)
+    {
+        var courses = await courseServices.RetrieveAllBySchoolIdAsync(schoolId, @params);
+        if (!courses.Any())
+        {
+            return NotFound("Courses not found for this school.");
+        }
+        return Ok(courses);
+    }
+
+
 }

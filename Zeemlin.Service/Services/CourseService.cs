@@ -23,16 +23,11 @@ public class CourseService : ICourseServices
         _schoolRepository = schoolRepository;
     }
 
-
     public async Task<CourseForResultDto> CreateAsync(CourseForCreationDto dto)
     {
-        // Validate SchoolId range
-        if (dto.SchoolId < 1) // Adjust the range based on your valid school IDs
-        {
+        if (dto.SchoolId < 1) 
             throw new ZeemlinException(400, "Invalid SchoolId. School ID must be between 1 and 100.");
-        }
-
-        // Check for duplicate course name within the same school
+        
         var existingCourse = await _courseRepository.SelectAll()
             .AsNoTracking()
             .Where(c => c.Name.ToLower() == dto.Name.ToLower() && c.SchoolId == dto.SchoolId)
@@ -73,9 +68,7 @@ public class CourseService : ICourseServices
         .FirstOrDefaultAsync();
 
         if (existingCourse is not null)
-        {
             throw new ZeemlinException(409, "Course with the same name already exists in this school.");
-        }
 
         var school = await _schoolRepository.SelectAll()
             .AsNoTracking()
@@ -109,7 +102,7 @@ public class CourseService : ICourseServices
     public async Task<IEnumerable<CourseForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {
         var courses = await _courseRepository.SelectAll()
-          .Include(c => c.Groups) // Eager loading for groups
+          .Include(c => c.Groups) 
           .AsNoTracking()
           .ToPagedList(@params)
           .ToListAsync();
@@ -117,31 +110,54 @@ public class CourseService : ICourseServices
         var courseDtos = _mapper.Map<IEnumerable<CourseForResultDto>>(courses);
         foreach (var courseDto in courseDtos)
         {
-            courseDto.GroupCount = courseDto.GroupForResultDto?.Count ?? 0; // Existing logic for count
+            courseDto.GroupCount = courseDto.GroupForResultDto?.Count ?? 0;
         }
 
         return courseDtos;
     }
 
-
-
     public async Task<CourseForResultDto> RetrieveIdAsync(long id)
     {
         var course = await _courseRepository.SelectAll()
-          .Include(c => c.Groups) // Eager loading for groups
+          .Include(c => c.Groups)
           .AsNoTracking()
           .Where(u => u.Id == id)
           .FirstOrDefaultAsync();
 
         if (course is null)
-        {
             throw new ZeemlinException(404, "Course not found");
-        }
 
         var courseDto = _mapper.Map<CourseForResultDto>(course);
-        courseDto.GroupCount = course.Groups?.Count ?? 0; // Handle null groups
+        courseDto.GroupCount = course.Groups?.Count ?? 0; 
 
         return courseDto;
     }
+
+    public async Task<IEnumerable<CourseForResultDto>> RetrieveAllBySchoolIdAsync(long schoolId, PaginationParams @params)
+    {
+        var school = await _schoolRepository.SelectAll()
+            .AsNoTracking()
+            .Where(s => s.Id == schoolId)
+            .FirstOrDefaultAsync();
+
+        if (school is null)
+            throw new ZeemlinException(404, "School not found");
+
+        var courses = await _courseRepository.SelectAll()
+            .Include(c => c.Groups) 
+            .AsNoTracking()
+            .Where(c => c.SchoolId == schoolId)
+            .ToPagedList(@params)
+            .ToListAsync();
+
+        var courseDtos = _mapper.Map<IEnumerable<CourseForResultDto>>(courses);
+        foreach (var courseDto in courseDtos)
+        {
+            courseDto.GroupCount = await _courseRepository.GetGroupCountAsync(courseDto.Id);
+        }
+
+        return courseDtos;
+    }
+
 
 }
