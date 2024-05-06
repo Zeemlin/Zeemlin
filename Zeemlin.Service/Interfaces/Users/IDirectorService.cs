@@ -11,6 +11,6 @@ public interface IDirectorService
     Task<DirectorForResultDto> CreateAsync(DirectorForCreationDto dto);
     Task<DirectorForResultDto> ModifyAsync(long id, DirectorForUpdateDto dto);
     Task<IEnumerable<DirectorForResultDto>> RetrieveAllAsync(PaginationParams @params);
-    Task<IEnumerable<DirectorForResultDto>> RetrieveByUsernameAsync(string search, AppDbContext context);
+    Task<IEnumerable<DirectorForResultDto>> RetrieveByUsernameAsync(string search, PaginationParams @params);
 
 }
