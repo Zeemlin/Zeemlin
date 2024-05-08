@@ -31,6 +31,8 @@ public class ParentForCreationDto
 
     // Address 
     [Required]
+    public Region Region { get; set; }
+    [Required]
     [MaxLength(50)]
     public string DistrictName { get; set; }
     [Required]
