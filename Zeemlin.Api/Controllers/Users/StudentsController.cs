@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Zeemlin.Service.DTOs.Users.Students;
+using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces.Users;
 
 namespace Zeemlin.Api.Controllers.Users;
@@ -35,8 +36,27 @@ public class StudentsController : BaseController
         => Ok(await this._studentService.ModifyAsync(id, dto));
 
     [HttpGet("search/{searchTerm}")]
-    public async Task<IActionResult> SearchStudentsTerm(string searchTerm)
+    public async Task<IActionResult> SearchStudentPhoneNumberTerm(string searchTerm)
     {
-        return Ok(await _studentService.RetrieveByDataAsync(searchTerm));
+        return Ok(await _studentService.RetrieveByPhoneNumberAsync(searchTerm));
     }
+
+    [HttpPut("{id}/address")]
+    public async Task<IActionResult> UpdateStudentAddressAsync(long id, [FromBody] StudentAddressForUpdateDto dto)
+    {
+        try
+        {
+            var updatedStudent = await _studentService.StudentAddressUpdate(id, dto);
+            return Ok(updatedStudent);
+        }
+        catch (ZeemlinException ex)
+        {
+            return StatusCode(ex.StatusCode, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
 }

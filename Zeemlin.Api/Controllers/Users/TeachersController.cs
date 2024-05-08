@@ -2,6 +2,7 @@
 using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Users.Teachers;
+using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces.Users;
 
 namespace Zeemlin.Api.Controllers.Users;
@@ -36,7 +37,8 @@ public class TeachersController : BaseController
     public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long id, [FromBody] TeacherForUpdateDto dto)
         => Ok(await this._teacherService.ModifyAsync(id, dto));
 
-    [HttpGet("search")] // Username bo'yicha qidirish
+    // Username bo'yicha qidirish
+    [HttpGet("search")] 
     public async Task<IActionResult> SearchAsync(string searchTerm, long currentSchoolId)
     {
         var searchResults = await _teacherService.SearchByUsernameAsync(searchTerm, currentSchoolId);
@@ -44,7 +46,8 @@ public class TeachersController : BaseController
     }
 
 
-    [HttpGet("filtered")] // Maktab adminlari, o'qituvchilari va o'quvchilari uchun filtrlash
+    // Maktab adminlari, o'qituvchilari va o'quvchilari uchun filtrlash
+    [HttpGet("filtered")] 
     public async Task<IActionResult> GetFilteredTeachers(
         ScienceType scienceType, // Optional query parameter
         long schoolId = 0) // Optional query parameter with default value
@@ -56,7 +59,8 @@ public class TeachersController : BaseController
        
     }
 
-    [HttpGet("schools/{schoolId}/teachers")] // Maktab Id bo'yicha barcha ustozlarni qaytaruvchi method
+    // Maktab Id bo'yicha barcha ustozlarni qaytaruvchi method
+    [HttpGet("schools/{schoolId}/teachers")] 
     public async Task<IActionResult> GetTeachersBySchoolAsync([FromRoute(Name = "schoolId")] long schoolId)
     {
         var teachers = await _teacherService.GetTeachersBySchoolAsync(schoolId);
@@ -71,6 +75,18 @@ public class TeachersController : BaseController
         return Ok(teachers);
     }
 
-
+    [HttpPut("{id}/address")]
+    public async Task<IActionResult> UpdateTeacherAddressAsync(long id, [FromBody] TeacherAddressForUpdateDto dto)
+    {
+        try
+        {
+            var updatedTeacher = await _teacherService.TeacherAddressUpdate(id, dto);
+            return Ok(updatedTeacher);
+        }
+        catch (ZeemlinException ex)
+        {
+            return StatusCode(ex.StatusCode, ex.Message);
+        }
+    }
 
 }

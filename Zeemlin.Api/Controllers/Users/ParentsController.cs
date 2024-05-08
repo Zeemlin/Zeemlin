@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Users.Parents;
+using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces.Users;
 
 namespace Zeemlin.Api.Controllers.Users;
@@ -33,4 +34,23 @@ public class ParentsController : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long id, [FromBody] ParentForUpdateDto dto)
         => Ok(await _parentService.ModifyAsync(id, dto));
+
+    [HttpPut("{id}/address")]
+    public async Task<IActionResult> UpdateParentAddressAsync(long id, [FromBody] ParentAddressForUpdateDto dto)
+    {
+        try
+        {
+            var updatedParent = await _parentService.ParentAddressUpdate(id, dto);
+            return Ok(updatedParent);
+        }
+        catch (ZeemlinException ex)
+        {
+            return StatusCode(ex.StatusCode, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
 }

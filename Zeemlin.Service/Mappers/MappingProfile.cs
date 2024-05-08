@@ -40,16 +40,19 @@ public class MappingProfile : Profile
         CreateMap<Student, StudentForCreationDto>().ReverseMap();
         CreateMap<Student, StudentForUpdateDto>().ReverseMap();
         CreateMap<Student, StudentForResultDto>().ReverseMap();
+        CreateMap<Student, StudentAddressForUpdateDto>().ReverseMap();
 
         CreateMap<Teacher, TeacherForCreationDto>().ReverseMap();
         CreateMap<Teacher, TeacherForUpdateDto>().ReverseMap();
         CreateMap<Teacher, TeacherForResultDto>().ReverseMap();
         CreateMap<Teacher, TeacherSearchResultDto>().ReverseMap();
         CreateMap<Teacher, FilteredTeacherDTO>();
+        CreateMap<Teacher, TeacherAddressForUpdateDto>().ReverseMap();
 
         CreateMap<Parent, ParentForCreationDto>().ReverseMap();
         CreateMap<Parent, ParentForUpdateDto>().ReverseMap();
         CreateMap<Parent, ParentForResultDto>().ReverseMap();
+        CreateMap<Parent, ParentAddressForUpdateDto>().ReverseMap();
 
         CreateMap<Admin, AdminForCreationDto>().ReverseMap();
         CreateMap<Admin, AdminForUpdateDto>().ReverseMap();

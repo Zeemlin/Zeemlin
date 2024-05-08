@@ -11,7 +11,6 @@ using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.DTOs.TeacherGroups;
 using Zeemlin.Service.DTOs.Users.Teachers;
 using Zeemlin.Service.DTOs.Assets.TeacherAssets;
-using Zeemlin.Data.Repositories;
 
 namespace Zeemlin.Service.Services.Users;
 
@@ -37,10 +36,10 @@ public class TeacherService : ITeacherService
     public async Task<TeacherForResultDto> CreateAsync(TeacherForCreationDto dto)
     {
         var TeacherEmailExist = await _repository.SelectAll()
-            .AsNoTracking()
             .Where(t => t.Username.ToLower() == dto.Username.ToLower() 
             || t.Email.ToLower() == dto.Email.ToLower()
             || t.PhoneNumber == dto.PhoneNumber)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (TeacherEmailExist is not null)
@@ -76,17 +75,17 @@ public class TeacherService : ITeacherService
     {
         var Teacher = await _repository
             .SelectAll()
-            .AsNoTracking()
             .Where(t => t.Id == id)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (Teacher is null)
             throw new ZeemlinException(404, "Teacher is not found.");
 
         var TeacherEmailExist = await _repository.SelectAll()
-            .AsNoTracking()
             .Where(t => t.Email.ToLower() == dto.Email.ToLower()
             || t.PhoneNumber == dto.PhoneNumber)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
 
@@ -99,6 +98,24 @@ public class TeacherService : ITeacherService
 
         return _mapper.Map<TeacherForResultDto>(person);
 
+    }
+
+    public async Task<TeacherForResultDto> TeacherAddressUpdate(long id, TeacherAddressForUpdateDto dto)
+    {
+        var teacher = await _repository
+            .SelectAll()
+            .Where(t => t.Id == id)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (teacher is null)
+            throw new ZeemlinException(404, "Teacher is not found.");
+
+        var person = _mapper.Map(dto, teacher);
+        person.UpdatedAt = DateTime.UtcNow;
+        await _repository.UpdateAsync(person);
+
+        return _mapper.Map<TeacherForResultDto>(teacher);
     }
 
     public async Task<bool> RemoveAsync(long id)

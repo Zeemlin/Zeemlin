@@ -78,6 +78,25 @@ public class ParentService : IParentService
         return _mapper.Map<ParentForResultDto>(modify);
     }
 
+    public async Task<ParentForResultDto> ParentAddressUpdate(long id, ParentAddressForUpdateDto dto)
+    {
+        var parent = await _parentRepository
+            .SelectAll()
+            .Where(p => p.Id == id)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (parent is null)
+            throw new ZeemlinException(404, "Parent not found.");
+
+        var modify = _mapper.Map(dto, parent);
+        modify.UpdatedAt = DateTime.UtcNow;
+        await _parentRepository.UpdateAsync(modify);
+
+        return _mapper.Map<ParentForResultDto>(parent);
+    }
+
+
     public async Task<bool> RemoveAsync(long id)
     {
         var isValidId = await _parentRepository

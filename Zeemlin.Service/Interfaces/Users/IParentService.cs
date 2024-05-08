@@ -9,5 +9,6 @@ public interface IParentService
     Task<ParentForResultDto> RetrieveByIdAsync(long id);
     Task<ParentForResultDto> CreateAsync(ParentForCreationDto dto);
     Task<ParentForResultDto> ModifyAsync(long id, ParentForUpdateDto dto);
+    Task<ParentForResultDto> ParentAddressUpdate(long id, ParentAddressForUpdateDto dto);
     Task<IEnumerable<ParentForResultDto>> RetrieveAllAsync(PaginationParams @params);
 }
