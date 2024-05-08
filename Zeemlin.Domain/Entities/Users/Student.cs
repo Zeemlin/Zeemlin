@@ -1,8 +1,6 @@
 ﻿using Zeemlin.Domain.Enums;
-using System.ComponentModel;
 using Zeemlin.Domain.Commons;
 using Zeemlin.Domain.Entities.Assets;
-using System.ComponentModel.DataAnnotations;
 
 namespace Zeemlin.Domain.Entities.Users;
 

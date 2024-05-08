@@ -140,6 +140,9 @@ public class SubjectService : ISubjectService
             .ToPagedList(@params)
             .ToListAsync();
 
+        if (subjects is null)
+            throw new ZeemlinException(404, "Lesson Not Found");
+
         var result = _mapper.Map<IEnumerable<SubjectForResultDto>>(subjects);
 
         return result;
