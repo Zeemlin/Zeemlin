@@ -71,6 +71,7 @@ public class MappingProfile : Profile
         #region Schools
         CreateMap<School, SchoolForCreationDto>().ReverseMap();
         CreateMap<School, SchoolForUpdateDto>().ReverseMap();
+        CreateMap<School, SchoolActivityForUpdateDto>().ReverseMap();
         CreateMap<School, SchoolForResultDto>().ReverseMap();
 
         CreateMap<Event, EventForCreationDto>().ReverseMap();

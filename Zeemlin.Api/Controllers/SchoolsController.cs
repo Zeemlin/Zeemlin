@@ -59,11 +59,6 @@ public class SchoolsController : BaseController
         {
             return StatusCode(ex.StatusCode, ex.Message);
         }
-        catch (Exception ex)
-        {
-            // Handle unexpected exceptions with appropriate logging
-            return StatusCode(500, "Internal server error");
-        }
     }
 
 
