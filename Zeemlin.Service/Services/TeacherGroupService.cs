@@ -37,9 +37,16 @@ public class TeacherGroupService : ITeacherGroupService
         if (group is null)
             throw new ZeemlinException(404, "Group not found");
 
-        if (group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        var school = await _groupRepository.SelectAll()
+            .Where(u => u.Id == dto.GroupId)
+            .Include(l => l.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school.SchoolActivity != SchoolActivity.Active)
         {
-            throw new ZeemlinException(403, $"The {group?.Course?.School?.Name} is temporarily inactive. Unable to add teacher to {group.Name}");
+            throw new ZeemlinException(403, $"The {school?.Name} is temporarily inactive. Unable to add teacher to {group.Name}");
         }
 
         var teacher = await _teacher.SelectAll()

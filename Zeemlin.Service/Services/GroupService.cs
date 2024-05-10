@@ -34,6 +34,7 @@ public class GroupService : IGroupService
     {
         var course = await _courseRepository.SelectAll()
             .Where(c => c.Id == dto.CourseId)
+            .Include(s => s.School)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 

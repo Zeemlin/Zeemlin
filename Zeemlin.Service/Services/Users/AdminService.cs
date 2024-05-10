@@ -57,17 +57,17 @@ public class AdminService : IAdminService
         if (IsValidPassportSeria is not null)
             throw new ZeemlinException(409, "PassportSeria already exists");
 
-        var IsValidSchoolNumber = await _schoolRepository.SelectAll()
+        var IsValidSchool = await _schoolRepository.SelectAll()
             .Where(s => s.Id == dto.SchoolId)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        if (IsValidSchoolNumber is null)
+        if (IsValidSchool is null)
             throw new ZeemlinException(404, "School Not Found");
 
-        if (IsValidSchoolNumber?.SchoolActivity != SchoolActivity.Active)
+        if (IsValidSchool?.SchoolActivity != SchoolActivity.Active)
         {
-            throw new ZeemlinException(403, $"The {IsValidSchoolNumber?.Name} is temporarily inactive. Admin cannot be created.");
+            throw new ZeemlinException(403, $"The {IsValidSchool?.Name} is temporarily inactive. Admin cannot be created.");
         }
 
         var mapped = _mapper.Map<Admin>(dto);
@@ -114,17 +114,17 @@ public class AdminService : IAdminService
         if (IsValidPassportSeria is not null)
             throw new ZeemlinException(404, "PassportSeria already exists");
 
-        var IsValidSchoolNumber = await _schoolRepository.SelectAll()
+        var IsValidSchool = await _schoolRepository.SelectAll()
             .Where(s => s.Id == dto.SchoolId)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        if (IsValidSchoolNumber is null)
+        if (IsValidSchool is null)
             throw new ZeemlinException(404, "School Not Found");
 
-        if (IsValidSchoolNumber?.SchoolActivity != SchoolActivity.Active)
+        if (IsValidSchool?.SchoolActivity != SchoolActivity.Active)
         {
-            throw new ZeemlinException(403, $"The {IsValidSchoolNumber?.Name} is temporarily inactive. Admin information cannot be changed.");
+            throw new ZeemlinException(403, $"The {IsValidSchool?.Name} is temporarily inactive. Admin information cannot be changed.");
         }
 
         var mapped = _mapper.Map(dto, IsValidId);

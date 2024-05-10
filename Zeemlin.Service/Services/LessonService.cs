@@ -28,7 +28,6 @@ public class LessonService : ILessonService
         this.teacherRepository = teacherRepository;
     }
 
-
     public async Task<LessonForResultDto> CreateAsync(LessonForCreationDto dto)
     {
         var group = await groupRepository.SelectAll()
@@ -39,10 +38,15 @@ public class LessonService : ILessonService
         if (group is null)
             throw new ZeemlinException(404, "Group not found");
 
-        if (group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
-        {
-            throw new ZeemlinException(403, $"{group?.Course?.School?.Name} is temporarily inactive and lesson cannot be created.");
-        }
+        var school = await groupRepository.SelectAll()
+            .Where(l => l.Id == dto.GroupId)
+            .Include(l => l.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Lesson cannot be created.");
 
         var teacher = await teacherRepository.SelectAll()
             .Where(t => t.Id == dto.TeacherId)
@@ -93,10 +97,15 @@ public class LessonService : ILessonService
         if (group is null)
             throw new ZeemlinException(404, "Group not found");
 
-        if (group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
-        {
-            throw new ZeemlinException(403, $"{group?.Course?.School?.Name} is temporarily inactive and lesson information cannot be changed");
-        }
+        var school = await groupRepository.SelectAll()
+            .Where(l => l.Id == dto.GroupId)
+            .Include(l => l.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Lesson information cannot be changed.");
 
         var teacher = await teacherRepository.SelectAll()
             .Where(t => t.Id == dto.TeacherId)

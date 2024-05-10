@@ -38,10 +38,15 @@ public class HomeworkService : IHomeworkService
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found.");
 
-        if (lesson?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
-        {
-            throw new ZeemlinException(403, $"{lesson?.Group?.Course?.School?.Name} is temporarily inactive and homework cannot be created.");
-        }
+        var school = await _lessonRepository.SelectAll()
+            .Where(l => l.Id == dto.LessonId)
+            .Include(l => l.Group.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Group.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Homework cannot be created.");
 
         if (dto.Deadline < DateTime.Now)
         {
@@ -72,10 +77,15 @@ public class HomeworkService : IHomeworkService
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found.");
 
-        if (lesson?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
-        {
-            throw new ZeemlinException(403, $"{lesson?.Group?.Course?.School?.Name} is temporarily inactive and homework information cannot be changed.");
-        }
+        var school = await _lessonRepository.SelectAll()
+            .Where(l => l.Id == dto.LessonId)
+            .Include(l => l.Group.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Group.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Homework information cannot be changed.");
 
         if (dto.Deadline < DateTime.Now)
             throw new ZeemlinException(400, "Invalid date entered. DueTime cannot be in the past.");

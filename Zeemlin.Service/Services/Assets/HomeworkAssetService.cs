@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Assets;
-using Zeemlin.Domain.Entities;
 using Zeemlin.Domain.Entities.Assets;
 using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Helpers;
@@ -60,10 +59,16 @@ public class HomeworkAssetService : IHomeworkAssetService
         if (IsValidHomeworkId is null)
             throw new ZeemlinException(404, "Homework not found");
 
-        // Maktab faol ekanligini tekshirish
-        if (IsValidHomeworkId.Lesson?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        var school = await _homeworkRepository.SelectAll()
+            .Where(l => l.Id == dto.HomeworkId)
+            .Include(l => l.Lesson.Group.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Lesson.Group.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
         {
-            throw new ZeemlinException(403, $"The {IsValidHomeworkId.Lesson?.Group?.Course?.School?.Name} associated with this homework is temporarily inactive and cannot upload file.");
+            throw new ZeemlinException(403, $"The {school?.Name} associated with this homework is temporarily inactive. Cannot upload file.");
         }
         // 1ta uyga vazifa uchun 10 ta fayl yuklanganini tekshirish
         var existingAssetCount = await _repository.CountAsync(a => a.HomeworkId == dto.HomeworkId);

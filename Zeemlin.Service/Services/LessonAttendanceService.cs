@@ -156,11 +156,12 @@ namespace Zeemlin.Service.Services
             }).ToList();
         }
 
+
+
         public async Task<IEnumerable<StudentAttendanceReportDto>> GetLessonAttendanceReportAsync(
-            long groupId, long lessonId, DateTime startDate, DateTime endDate)
+            long lessonId, DateTime startDate, DateTime endDate)
         {
             var attendances = await _lessonAttendanceRepository.SelectAll()
-                .Where(la => la.Lesson.GroupId == groupId)
                 .Where(la => la.LessonId == lessonId)
                 .Where(la => la.DateTime >= startDate && la.DateTime <= endDate)
                 .Include(la => la.Student)
