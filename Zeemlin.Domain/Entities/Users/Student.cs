@@ -14,6 +14,7 @@ public class Student : Auditable
     public string PhoneNumber { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
+    public string Salt { get; set; }
 
     // Address
     public Region Region { get; set; }

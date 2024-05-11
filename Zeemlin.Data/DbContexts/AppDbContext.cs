@@ -1,6 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Zeemlin.Data.DbContexts.Seeds.Schools;
-using Zeemlin.Data.DbContexts.Seeds.Users;
 using Zeemlin.Domain.Entities;
 using Zeemlin.Domain.Entities.Assets;
 using Zeemlin.Domain.Entities.Events;
@@ -61,7 +59,7 @@ namespace Zeemlin.Data.DbContexts
 
         // Many-to-Many Relationships (without navigation properties)
         public DbSet<StudentGroup> StudentGroups { get; set; }
-        public DbSet<TeacherGroup> TeacherGroups { get; set; } // Explicitly define the join table
+        public DbSet<TeacherGroup> TeacherGroups { get; set; } 
         public DbSet<ParentStudent> ParentStudents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

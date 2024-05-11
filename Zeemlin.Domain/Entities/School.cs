@@ -33,6 +33,7 @@ public class School : Auditable
     public DateTime EndDateOfActivity { get; set; }
 
 
+    public ICollection<Admin> Admins { get; set; }
     public ICollection<SchoolAsset> Asset { get; set; }
     public ICollection<Course> Courses { get; set; }
 }

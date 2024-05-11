@@ -34,6 +34,10 @@ public class SchoolConfiguration
               .HasForeignKey(a => a.SchoolId)
               .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(s => s.Admins)
+              .WithOne(c => c.School)
+              .HasForeignKey(c => c.SchoolId)
+              .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(s => s.Courses)
               .WithOne(c => c.School)
