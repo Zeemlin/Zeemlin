@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Users.Teachers;
@@ -36,6 +37,10 @@ public class TeachersController : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long id, [FromBody] TeacherForUpdateDto dto)
         => Ok(await this._teacherService.ModifyAsync(id, dto));
+
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePasswordAsync([Required] string email, [FromForm] TeacherForChangePasswordDto dto)
+            => Ok(await this._teacherService.ChangePasswordAsync(email, dto));
 
     // Username bo'yicha qidirish
     [HttpGet("search")] 

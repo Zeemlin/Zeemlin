@@ -12,6 +12,8 @@ public interface ITeacherService
     // Shu guruh uchun dars o'tadigan ustozlarni qaytaradi
     Task<IEnumerable<TeacherForResultDto>> GetTeachersAsync(long groupId);
     Task<TeacherForResultDto> ModifyAsync(long id, TeacherForUpdateDto dto);
+    Task<bool> ChangePasswordAsync(string email, TeacherForChangePasswordDto dto);
+
     // Teacherning address ma'lumotlarini yangilash uchun method
     Task<TeacherForResultDto> TeacherAddressUpdate(long id, TeacherAddressForUpdateDto dto);
 
