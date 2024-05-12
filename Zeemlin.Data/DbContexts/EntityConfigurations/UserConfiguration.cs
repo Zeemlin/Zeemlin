@@ -18,7 +18,7 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.Property(e => e.FirstName).IsRequired().HasMaxLength(30);
                 builder.Property(e => e.LastName).IsRequired().HasMaxLength(30);
                 builder.Property(e => e.Email).IsRequired().HasMaxLength(50);
-                builder.Property(e => e.Password).IsRequired().HasMaxLength(30);
+                builder.Property(e => e.Password).IsRequired();
                 builder.Property(e => e.Salt).IsRequired();
                 builder.Property(e => e.Gender).IsRequired();
                 builder.Property(e => e.PassportSeria).IsRequired().HasMaxLength(9);
@@ -38,7 +38,7 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.Property(e => e.LastName).IsRequired().HasMaxLength(30);
                 builder.Property(e => e.Email).IsRequired().HasMaxLength(50);
                 builder.Property(e => e.PhoneNumber).IsRequired();
-                builder.Property(e => e.Password).IsRequired().HasMaxLength(30);
+                builder.Property(e => e.Password).IsRequired();
                 builder.Property(e => e.Salt).IsRequired();
                 builder.Property(e => e.Gender).IsRequired();
                 builder.Property(e => e.PassportSeria).IsRequired().HasMaxLength(9);
@@ -61,7 +61,7 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.Property(e => e.FirstName).IsRequired().HasMaxLength(30);
                 builder.Property(e => e.LastName).IsRequired().HasMaxLength(30);
                 builder.Property(e => e.Email).IsRequired().HasMaxLength(50);
-                builder.Property(e => e.Password).IsRequired().HasMaxLength(30);
+                builder.Property(e => e.Password).IsRequired();
                 builder.Property(e => e.Salt).IsRequired();
                 builder.Property(e => e.Gender).IsRequired();
                 builder.Property(e => e.PassportSeria).IsRequired().HasMaxLength(9);
@@ -82,8 +82,8 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.Property(t => t.DateOfBirth).IsRequired();
                 builder.Property(t => t.PhoneNumber).IsRequired();
                 builder.Property(t => t.Email).IsRequired().HasMaxLength(50);
-                builder.Property(t => t.Password).IsRequired().HasMaxLength(50);
-                builder.Property(e => e.Salt).IsRequired();
+                builder.Property(t => t.Password).IsRequired();
+                builder.Property(t => t.Salt).IsRequired();
                 builder.Property(t => t.Biography).HasMaxLength(200);
                 builder.Property(t => t.Region).IsRequired();
                 builder.Property(t => t.DistrictName).IsRequired().HasMaxLength(50);
