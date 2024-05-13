@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Zeemlin.Data.DbContexts;
+using System.ComponentModel.DataAnnotations;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Users.Directors;
 using Zeemlin.Service.Interfaces.Users;
@@ -9,12 +9,10 @@ namespace Zeemlin.Api.Controllers.Users;
 public class DirectorsController : BaseController
 {
     private readonly IDirectorService _directorService;
-    private readonly AppDbContext appDbContext;
 
-    public DirectorsController(IDirectorService directorService, AppDbContext appDbContext)
+    public DirectorsController(IDirectorService directorService)
     {
         _directorService = directorService;
-        this.appDbContext = appDbContext;
     }
 
     [HttpPost]
@@ -23,19 +21,23 @@ public class DirectorsController : BaseController
 
     [HttpGet]
     public async Task<IActionResult> GetAllAsync([FromQuery] PaginationParams @params)
-        => Ok(await this._directorService.RetrieveAllAsync(@params));
+        => Ok(await _directorService.RetrieveAllAsync(@params));
 
     [HttpGet("{id}")]
     public async Task<IActionResult> GetAsync([FromRoute(Name = "id")] long id)
-        => Ok(await this._directorService.RetrieveByIdAsync(id));
+        => Ok(await _directorService.RetrieveByIdAsync(id));
 
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> DeleteAsync([FromRoute(Name = "id")] long id)
-        => Ok(await this._directorService.RemoveAsync(id));
+        => Ok(await _directorService.RemoveAsync(id));
 
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long id, [FromBody] DirectorForUpdateDto dto)
-        => Ok(await this._directorService.ModifyAsync(id, dto));
+        => Ok(await _directorService.ModifyAsync(id, dto));
+
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePasswordAsync([Required] string email, [FromForm] DirectorForChangePasswordDto dto)
+            => Ok(await _directorService.ChangePasswordAsync(email, dto));
 
     [HttpGet("username")]
     public async Task<IActionResult> SearchAdminsTerm(string director, PaginationParams @params)

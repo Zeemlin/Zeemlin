@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities.Users;
+using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.DTOs.Users.Students;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces.Users;
@@ -82,6 +83,25 @@ public class StudentService : IStudentService
         await _studentRepository.UpdateAsync(person);
 
         return _mapper.Map<StudentForResultDto>(person);
+    }
+
+    public async Task<bool> ChangePasswordAsync(string email, StudentForChangePasswordDto dto)
+    {
+        var user = await _studentRepository.SelectAll()
+            .Where(u => u.Email == email)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        if (user is null || !PasswordHelper.Verify(dto.OldPassword, user.Salt, user.Password))
+            throw new ZeemlinException(404, "User or Password is incorrect");
+        else if (dto.NewPassword != dto.ConfirmPassword)
+            throw new ZeemlinException(400, "New password and confirm password aren't equal");
+
+        var hash = PasswordHelper.Hash(dto.ConfirmPassword);
+        user.Salt = hash.Salt;
+        user.Password = hash.Hash;
+        var updated = await _studentRepository.UpdateAsync(user);
+
+        return true;
     }
 
     public async Task<StudentForResultDto> StudentAddressUpdate(long id, StudentAddressForUpdateDto dto)

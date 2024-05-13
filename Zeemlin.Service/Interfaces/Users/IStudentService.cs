@@ -11,5 +11,6 @@ public interface IStudentService
     Task<IEnumerable<StudentForResultDto>> RetrieveAllAsync();
     Task<StudentForResultDto> AddAsync(StudentForCreationDto dto);
     Task<StudentForResultDto> ModifyAsync(long id, StudentForUpdateDto dto);
+    Task<bool> ChangePasswordAsync(string email, StudentForChangePasswordDto dto);
     Task<StudentForResultDto> StudentAddressUpdate(long id, StudentAddressForUpdateDto dto);
 }

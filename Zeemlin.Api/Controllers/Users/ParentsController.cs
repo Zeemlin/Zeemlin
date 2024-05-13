@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Users.Parents;
 using Zeemlin.Service.Exceptions;
@@ -34,6 +35,10 @@ public class ParentsController : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long id, [FromBody] ParentForUpdateDto dto)
         => Ok(await _parentService.ModifyAsync(id, dto));
+
+    [HttpPut("change-password")]
+    public async Task<IActionResult> ChangePasswordAsync([Required] string email, [FromForm] ParentForChangePasswordDto dto)
+            => Ok(await _parentService.ChangePasswordAsync(email, dto));
 
     [HttpPut("{id}/address")]
     public async Task<IActionResult> UpdateParentAddressAsync(long id, [FromBody] ParentAddressForUpdateDto dto)

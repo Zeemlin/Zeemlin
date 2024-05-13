@@ -39,33 +39,38 @@ public class MappingProfile : Profile
         #region Users
         CreateMap<Student, StudentForCreationDto>().ReverseMap();
         CreateMap<Student, StudentForUpdateDto>().ReverseMap();
-        CreateMap<Student, StudentForResultDto>().ReverseMap();
+        CreateMap<Student, StudentForChangePasswordDto>().ReverseMap();
         CreateMap<Student, StudentAddressForUpdateDto>().ReverseMap();
+        CreateMap<Student, StudentForResultDto>().ReverseMap();
 
         CreateMap<Teacher, TeacherForCreationDto>().ReverseMap();
         CreateMap<Teacher, TeacherForUpdateDto>().ReverseMap();
         CreateMap<Teacher, TeacherForChangePasswordDto>().ReverseMap();
+        CreateMap<Teacher, TeacherAddressForUpdateDto>().ReverseMap();
         CreateMap<Teacher, TeacherForResultDto>().ReverseMap();
         CreateMap<Teacher, TeacherSearchResultDto>().ReverseMap();
         CreateMap<Teacher, FilteredTeacherDTO>();
-        CreateMap<Teacher, TeacherAddressForUpdateDto>().ReverseMap();
 
         CreateMap<Parent, ParentForCreationDto>().ReverseMap();
         CreateMap<Parent, ParentForUpdateDto>().ReverseMap();
-        CreateMap<Parent, ParentForResultDto>().ReverseMap();
         CreateMap<Parent, ParentAddressForUpdateDto>().ReverseMap();
+        CreateMap<Parent, ParentForChangePasswordDto>().ReverseMap();
+        CreateMap<Parent, ParentForResultDto>().ReverseMap();
 
         CreateMap<Admin, AdminForCreationDto>().ReverseMap();
         CreateMap<Admin, AdminForUpdateDto>().ReverseMap();
+        CreateMap<Admin, AdminForChangePasswordDto>().ReverseMap();
         CreateMap<Admin, AdminForResultDto>().ReverseMap();
 
 
         CreateMap<Director, DirectorForCreationDto>().ReverseMap();
         CreateMap<Director, DirectorForUpdateDto>().ReverseMap();
+        CreateMap<Director, DirectorForChangePasswordDto>().ReverseMap();
         CreateMap<Director, DirectorForResultDto>().ReverseMap();
 
         CreateMap<SuperAdmin, SuperAdminForCreationDto>().ReverseMap();
         CreateMap<SuperAdmin, SuperAdminForUpdateDto>().ReverseMap();
+        CreateMap<SuperAdmin, SuperAdminForChangePasswordDto>().ReverseMap();
         CreateMap<SuperAdmin, SuperAdminForResultDto>().ReverseMap();
         #endregion
 

@@ -11,6 +11,7 @@ public interface IAdminService
     Task<AdminForResultDto> RetrieveByIdAsync(long id);
     Task<AdminForResultDto> CreateAsync(AdminForCreationDto dto);
     Task<AdminForResultDto> ModifyAsync(long id, AdminForUpdateDto dto);
+    Task<bool> ChangePasswordAsync(string email, AdminForChangePasswordDto dto);
     Task<IEnumerable<AdminForResultDto>> RetrieveAllAsync(PaginationParams @params);
     Task<IEnumerable<AdminForResultDto>> RetrieveBySchoolIdAsync(long schoolId, PaginationParams @params);
 }

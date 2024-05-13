@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries.Users;
 using Zeemlin.Domain.Entities.Users;
 using Zeemlin.Service.Commons.Extentions;
+using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Schools;
 using Zeemlin.Service.DTOs.Users.Directors;
@@ -118,6 +119,25 @@ public class DirectorService : IDirectorService
         await _repository.UpdateAsync(mapped);
 
         return _mapper.Map<DirectorForResultDto>(mapped);
+    }
+
+    public async Task<bool> ChangePasswordAsync(string email, DirectorForChangePasswordDto dto)
+    {
+        var user = await _repository.SelectAll()
+            .Where(u => u.Email == email)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        if (user is null || !PasswordHelper.Verify(dto.OldPassword, user.Salt, user.Password))
+            throw new ZeemlinException(404, "User or Password is incorrect");
+        else if (dto.NewPassword != dto.ConfirmPassword)
+            throw new ZeemlinException(400, "New password and confirm password aren't equal");
+
+        var hash = PasswordHelper.Hash(dto.ConfirmPassword);
+        user.Salt = hash.Salt;
+        user.Password = hash.Hash;
+        var updated = await _repository.UpdateAsync(user);
+
+        return true;
     }
 
     public async Task<bool> RemoveAsync(long id)
