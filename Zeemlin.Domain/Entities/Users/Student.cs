@@ -1,10 +1,9 @@
 ﻿using Zeemlin.Domain.Enums;
-using Zeemlin.Domain.Commons;
 using Zeemlin.Domain.Entities.Assets;
 
 namespace Zeemlin.Domain.Entities.Users;
 
-public class Student : Auditable
+public class Student : User
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
@@ -12,9 +11,6 @@ public class Student : Auditable
     public string FatherName { get; set; }
     public GenderType genderType { get; set; }
     public string PhoneNumber { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string Salt { get; set; }
 
     // Address
     public Region Region { get; set; }
