@@ -130,7 +130,7 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.Property(e => e.Gender).IsRequired();
                 builder.Property(t => t.PhoneNumber).IsRequired();
                 builder.Property(e => e.Email).IsRequired().HasMaxLength(255);
-                builder.Property(t => t.Password).IsRequired().HasMaxLength(50);
+                builder.Property(t => t.Password).IsRequired();
                 builder.Property(e => e.Salt).IsRequired();
                 builder.Property(e => e.Region).IsRequired();
                 builder.Property(e => e.DistrictName).IsRequired().HasMaxLength(50);
@@ -159,7 +159,7 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.Property(t => t.genderType).IsRequired();
                 builder.Property(e => e.PhoneNumber).IsRequired();
                 builder.Property(e => e.Email).IsRequired().HasMaxLength(50);
-                builder.Property(e => e.Password).IsRequired().HasMaxLength(30);
+                builder.Property(e => e.Password).IsRequired();
                 builder.Property(e => e.Salt).IsRequired();
                 builder.Property(t => t.Region).IsRequired();
                 builder.Property(e => e.DistrictName).IsRequired().HasMaxLength(50);
