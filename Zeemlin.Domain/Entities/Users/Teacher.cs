@@ -1,19 +1,16 @@
 ﻿using Zeemlin.Domain.Enums;
-using Zeemlin.Domain.Commons;
 using Zeemlin.Domain.Entities.Assets;
 
 namespace Zeemlin.Domain.Entities.Users;
 
-public class Teacher : Auditable
+public class Teacher : User
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Username { get; set; }
     public string DateOfBirth { get; set; }
     public string PhoneNumber { get; set; }
-    public string Email { get; set; }
-    public string Password { get; set; }
-    public string Biography { get; set; }
+    public string? Biography { get; set; }
 
     // Address
     public Region Region { get; set; }
@@ -30,4 +27,5 @@ public class Teacher : Auditable
 
     public ICollection<TeacherAward> TeacherAwards { get; set; }
     public ICollection<TeacherGroup> TeacherGroups { get; set; }
+    public ICollection<Lesson> Lessons { get; set; }
 }

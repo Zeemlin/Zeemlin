@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries.Users;
 using Zeemlin.Domain.Entities.Users;
 using Zeemlin.Service.Commons.Extentions;
+using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Users.Parents;
 using Zeemlin.Service.Exceptions;
@@ -77,6 +78,44 @@ public class ParentService : IParentService
 
         return _mapper.Map<ParentForResultDto>(modify);
     }
+
+    public async Task<bool> ChangePasswordAsync(string email, ParentForChangePasswordDto dto)
+    {
+        var user = await _parentRepository.SelectAll()
+            .Where(u => u.Email == email)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        if (user is null || !PasswordHelper.Verify(dto.OldPassword, user.Salt, user.Password))
+            throw new ZeemlinException(404, "User or Password is incorrect");
+        else if (dto.NewPassword != dto.ConfirmPassword)
+            throw new ZeemlinException(400, "New password and confirm password aren't equal");
+
+        var hash = PasswordHelper.Hash(dto.ConfirmPassword);
+        user.Salt = hash.Salt;
+        user.Password = hash.Hash;
+        var updated = await _parentRepository.UpdateAsync(user);
+
+        return true;
+    }
+
+    public async Task<ParentForResultDto> ParentAddressUpdate(long id, ParentAddressForUpdateDto dto)
+    {
+        var parent = await _parentRepository
+            .SelectAll()
+            .Where(p => p.Id == id)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (parent is null)
+            throw new ZeemlinException(404, "Parent not found.");
+
+        var modify = _mapper.Map(dto, parent);
+        modify.UpdatedAt = DateTime.UtcNow;
+        await _parentRepository.UpdateAsync(modify);
+
+        return _mapper.Map<ParentForResultDto>(parent);
+    }
+
 
     public async Task<bool> RemoveAsync(long id)
     {

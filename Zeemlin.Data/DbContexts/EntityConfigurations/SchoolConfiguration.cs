@@ -25,7 +25,7 @@ public class SchoolConfiguration
             builder.Property(s => s.StreetName).IsRequired().HasMaxLength(50);
             builder.Property(s => s.CallCenter);
             builder.Property(s => s.EmailCenter);
-            builder.Property(s => s.Website).HasMaxLength(100);
+            builder.Property(s => s.Website).HasMaxLength(255);
             builder.Property(s => s.SchoolActivity).IsRequired();
             builder.Property(s => s.EndDateOfActivity).IsRequired();
 
@@ -34,12 +34,20 @@ public class SchoolConfiguration
               .HasForeignKey(a => a.SchoolId)
               .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(s => s.Admins)
+              .WithOne(c => c.School)
+              .HasForeignKey(c => c.SchoolId)
+              .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(s => s.Courses)
               .WithOne(c => c.School)
               .HasForeignKey(c => c.SchoolId)
               .OnDelete(DeleteBehavior.Cascade);
 
+            builder.HasMany(s => s.Books)
+              .WithOne(c => c.School)
+              .HasForeignKey(c => c.SchoolId)
+              .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasOne(s => s.SchoolLogoAsset)
               .WithOne(a => a.School)

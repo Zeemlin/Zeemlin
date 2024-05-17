@@ -10,6 +10,7 @@ public interface IDirectorService
     Task<DirectorForResultDto> RetrieveByIdAsync(long id);
     Task<DirectorForResultDto> CreateAsync(DirectorForCreationDto dto);
     Task<DirectorForResultDto> ModifyAsync(long id, DirectorForUpdateDto dto);
+    Task<bool> ChangePasswordAsync(string email, DirectorForChangePasswordDto dto);
     Task<IEnumerable<DirectorForResultDto>> RetrieveAllAsync(PaginationParams @params);
     Task<IEnumerable<DirectorForResultDto>> RetrieveByUsernameAsync(string search, PaginationParams @params);
 

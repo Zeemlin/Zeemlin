@@ -107,9 +107,16 @@ public class VideoLessonAssetService : IVideoLessonAssetService
         if (IsLessonId is null)
             throw new ZeemlinException(404, "Lesson not found");
 
-        if (IsLessonId?.Group?.Course?.School?.SchoolActivity != SchoolActivity.Active)
+        var school = await _lessonRepository.SelectAll()
+            .Where(l => l.Id == dto.LessonId)
+            .Include(l => l.Group.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Group.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
         {
-            throw new ZeemlinException(403, $"The {IsLessonId?.Group?.Course?.School?.Name} is temporarily inactive and the video cannot be uploaded");
+            throw new ZeemlinException(403, $"The {school?.Name} is temporarily inactive and the video cannot be uploaded");
         }
 
         await ValidateImageAsync(dto.Path);

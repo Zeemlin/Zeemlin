@@ -13,5 +13,5 @@ public interface ILessonAttendanceService
     Task<IEnumerable<StudentAttendanceReportDto>> GetStudentAttendanceReportAsync(
         string studentFullName, DateTime startDate, DateTime endDate);
     Task<IEnumerable<StudentAttendanceReportDto>> GetLessonAttendanceReportAsync(
-        long groupId, long lessonId, DateTime startDate, DateTime endDate);
+        long lessonId, DateTime startDate, DateTime endDate);
 }

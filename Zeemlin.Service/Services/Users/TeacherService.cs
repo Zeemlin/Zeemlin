@@ -11,7 +11,7 @@ using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.DTOs.TeacherGroups;
 using Zeemlin.Service.DTOs.Users.Teachers;
 using Zeemlin.Service.DTOs.Assets.TeacherAssets;
-using Zeemlin.Data.Repositories;
+using Zeemlin.Service.Commons.Helpers;
 
 namespace Zeemlin.Service.Services.Users;
 
@@ -37,18 +37,22 @@ public class TeacherService : ITeacherService
     public async Task<TeacherForResultDto> CreateAsync(TeacherForCreationDto dto)
     {
         var TeacherEmailExist = await _repository.SelectAll()
-            .AsNoTracking()
             .Where(t => t.Username.ToLower() == dto.Username.ToLower() 
             || t.Email.ToLower() == dto.Email.ToLower()
             || t.PhoneNumber == dto.PhoneNumber)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (TeacherEmailExist is not null)
             throw new ZeemlinException
                 (409, "Teacher is already exist.");
 
+        var hasherResult = PasswordHelper.Hash(dto.Password);
         var mapped = _mapper.Map<Teacher>(dto);
         mapped.CreatedAt = DateTime.UtcNow;
+        mapped.Salt = hasherResult.Salt;
+        mapped.Password = hasherResult.Hash;
+
         var created = await _repository.InsertAsync(mapped);
 
         return _mapper.Map<TeacherForResultDto>(created);
@@ -76,17 +80,17 @@ public class TeacherService : ITeacherService
     {
         var Teacher = await _repository
             .SelectAll()
-            .AsNoTracking()
             .Where(t => t.Id == id)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
         if (Teacher is null)
             throw new ZeemlinException(404, "Teacher is not found.");
 
         var TeacherEmailExist = await _repository.SelectAll()
-            .AsNoTracking()
             .Where(t => t.Email.ToLower() == dto.Email.ToLower()
             || t.PhoneNumber == dto.PhoneNumber)
+            .AsNoTracking()
             .FirstOrDefaultAsync();
 
 
@@ -99,6 +103,43 @@ public class TeacherService : ITeacherService
 
         return _mapper.Map<TeacherForResultDto>(person);
 
+    }
+
+    public async Task<bool> ChangePasswordAsync(string email, TeacherForChangePasswordDto dto)
+    {
+        var user = await _repository.SelectAll()
+            .Where(u => u.Email == email)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        if (user is null || !PasswordHelper.Verify(dto.OldPassword, user.Salt, user.Password))
+            throw new ZeemlinException(404, "User or Password is incorrect");
+        else if (dto.NewPassword != dto.ConfirmPassword)
+            throw new ZeemlinException(400, "New password and confirm password aren't equal");
+
+        var hash = PasswordHelper.Hash(dto.ConfirmPassword);
+        user.Salt = hash.Salt;
+        user.Password = hash.Hash;
+        var updated = await _repository.UpdateAsync(user);
+
+        return true;
+    }
+
+    public async Task<TeacherForResultDto> TeacherAddressUpdate(long id, TeacherAddressForUpdateDto dto)
+    {
+        var teacher = await _repository
+            .SelectAll()
+            .Where(t => t.Id == id)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (teacher is null)
+            throw new ZeemlinException(404, "Teacher is not found.");
+
+        var person = _mapper.Map(dto, teacher);
+        person.UpdatedAt = DateTime.UtcNow;
+        await _repository.UpdateAsync(person);
+
+        return _mapper.Map<TeacherForResultDto>(teacher);
     }
 
     public async Task<bool> RemoveAsync(long id)

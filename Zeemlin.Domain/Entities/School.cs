@@ -2,6 +2,7 @@
 using Zeemlin.Domain.Commons;
 using Zeemlin.Domain.Entities.Users;
 using Zeemlin.Domain.Entities.Assets;
+using Zeemlin.Domain.Entities.Library;
 
 namespace Zeemlin.Domain.Entities;
 
@@ -33,6 +34,8 @@ public class School : Auditable
     public DateTime EndDateOfActivity { get; set; }
 
 
+    public ICollection<Admin> Admins { get; set; }
     public ICollection<SchoolAsset> Asset { get; set; }
     public ICollection<Course> Courses { get; set; }
+    public ICollection<Book> Books { get; set; }
 }

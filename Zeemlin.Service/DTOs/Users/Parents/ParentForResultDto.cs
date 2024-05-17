@@ -1,4 +1,6 @@
-﻿namespace Zeemlin.Service.DTOs.Users.Parents;
+﻿using Zeemlin.Domain.Enums;
+
+namespace Zeemlin.Service.DTOs.Users.Parents;
 
 public class ParentForResultDto
 {
@@ -9,6 +11,7 @@ public class ParentForResultDto
     public string Gender { get; set; }
     public string PhoneNumber { get; set; }
     public string Email { get; set; }
+    public Region Region { get; set; }
     public string DistrictName { get; set; }
     public string GeneralAddressMFY { get; set; }
     public string StreetName { get; set; }
