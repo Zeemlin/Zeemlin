@@ -29,6 +29,7 @@ using Zeemlin.Service.DTOs.ParentStudents;
 using Zeemlin.Service.DTOs.Assets.VideoLessonAssets;
 using Zeemlin.Service.DTOs.Events.EventRegistrations;
 using Zeemlin.Service.DTOs.Assets.StudentAwards;
+using Zeemlin.Service.DTOs.StudentScores;
 
 namespace Zeemlin.Service.Mappers;
 
@@ -120,6 +121,10 @@ public class MappingProfile : Profile
         CreateMap<LessonAttendance, LessonAttendanceForUpdateDto>().ReverseMap();
         CreateMap<LessonAttendance, LessonAttendanceForResultDto>().ReverseMap();
         CreateMap<LessonAttendance, StudentAttendanceReportDto>().ReverseMap();
+
+        CreateMap<StudentScore, StudentScoreForCreationDto>().ReverseMap();
+        CreateMap<StudentScore, StudentScoreForUpdateDto>().ReverseMap();
+        CreateMap<StudentScore, StudentScoreForResultDto>().ReverseMap();
         #endregion
 
         #region Relationships
