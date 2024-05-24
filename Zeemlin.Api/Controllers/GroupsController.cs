@@ -98,5 +98,17 @@ namespace Zeemlin.Api.Controllers
             var teachers = await _groupService.GetTeachersByGroupIdAsync(groupId);
             return Ok(teachers);
         }
+
+        [HttpGet("{groupId}/rankings")]
+        public async Task<IActionResult> GetStudentRankingsInGroupAsync([FromRoute(Name = "groupId")] long groupId)
+        {
+            if (groupId <= 0)
+            {
+                return BadRequest(new ArgumentException("Group ID must be a positive value."));
+            }
+
+            var studentRankings = await _groupService.GetStudentRankingsInGroup(groupId);
+            return Ok(studentRankings);
+        }
     }
 }
