@@ -22,4 +22,5 @@ public class Lesson : Auditable
     public ICollection<Question> Questions { get; set; }
     public ICollection<VideoLessonAsset> VideoLessons { get; set; }
     public ICollection<LessonAttendance> LessonAttendances { get; set; }
+    public ICollection<StudentScore> StudentScores { get; set; }
 }
