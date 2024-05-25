@@ -14,7 +14,6 @@ public class BookForResultDto
     public long Size { get; set; }
 
     public long SchoolId { get; set; }
-    public long TeacherId { get; set; }
 
     public string BookPhotoUrl { get; set; }
     public string PdfUrl { get; set; }
