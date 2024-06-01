@@ -6,5 +6,5 @@ public class LessonAttendanceForCreationDto
 {
     public long LessonId { get; set; }
     public long StudentId { get; set; }
-    public DateTime Date { get; set; }
+    public DateTime DateTime { get; set; }
 }

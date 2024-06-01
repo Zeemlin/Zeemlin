@@ -9,6 +9,5 @@ public class StudentScoreForCreationDto
     public long LessonId { get; set; }
     public AssessmentType AssessmentType { get; set; }
     public DateTime AssessmentDate { get; set; }
-    public int Score { get; set; }
     public string? Remark { get; set; }
 }

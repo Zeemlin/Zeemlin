@@ -48,7 +48,7 @@ namespace Zeemlin.Service.Services
                 throw new ZeemlinException(404, "Student not found");
 
             var existingAttendance = await _lessonAttendanceRepository.SelectAll()
-                .Where(a => a.LessonId == dto.LessonId && a.StudentId == dto.StudentId && a.DateTime.Date == dto.Date.Date)
+                .Where(a => a.LessonId == dto.LessonId && a.StudentId == dto.StudentId && a.DateTime.Date == dto.DateTime.Date)
                 .FirstOrDefaultAsync();
 
             if (existingAttendance is not null)

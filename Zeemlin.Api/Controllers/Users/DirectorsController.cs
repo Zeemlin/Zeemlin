@@ -29,7 +29,7 @@ public class DirectorsController : BaseController
 
     [HttpDelete("{id:long}")]
     public async Task<IActionResult> DeleteAsync([FromRoute(Name = "id")] long id)
-        => Ok(await _directorService.RemoveAsync(id));
+        => Ok(await _directorService.RemoveByIdAsync(id));
 
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long id, [FromBody] DirectorForUpdateDto dto)

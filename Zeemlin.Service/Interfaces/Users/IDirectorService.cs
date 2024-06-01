@@ -6,7 +6,7 @@ namespace Zeemlin.Service.Interfaces.Users;
 
 public interface IDirectorService
 {
-    Task<bool> RemoveAsync(long id);
+    Task<bool> RemoveByIdAsync(long id);
     Task<DirectorForResultDto> RetrieveByIdAsync(long id);
     Task<DirectorForResultDto> CreateAsync(DirectorForCreationDto dto);
     Task<DirectorForResultDto> ModifyAsync(long id, DirectorForUpdateDto dto);
