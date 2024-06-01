@@ -60,9 +60,12 @@ public class StudentService : IStudentService
         if (existingStudentPhoneNumber is not null)
             throw new ZeemlinException(409, "User is already exist.");
 
+        var hasherResult = PasswordHelper.Hash(dto.Password);
         var mappedStudent = _mapper.Map<Student>(dto);
         mappedStudent.StudentUniqueId = await GenerateUniqueStudentId();
         mappedStudent.CreatedAt = DateTime.UtcNow;
+        mappedStudent.Salt = hasherResult.Salt;
+        mappedStudent.Password = hasherResult.Hash;
         await _studentRepository.InsertAsync(mappedStudent);
 
         return _mapper.Map<StudentForResultDto>(mappedStudent);
