@@ -169,4 +169,15 @@ public class LessonService : ILessonService
 
         return _mapper.Map<LessonForResultDto>(lesson);
     }
+
+    public async Task<IEnumerable<LessonForResultDto>> GetLessonsByGroupAsync(long groupId)
+    {
+        var lessons = await lessonRepository.SelectAll()
+            .Where(l => l.GroupId == groupId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return _mapper.Map<IEnumerable<LessonForResultDto>>(lessons);
+    }
+
 }

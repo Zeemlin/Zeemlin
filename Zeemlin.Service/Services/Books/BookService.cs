@@ -76,21 +76,13 @@ public class BookService : IBookService
           .Include(s => s.Books)
           .Where(s => s.Id == dto.SchoolId)
           .AsNoTracking()
-          .FirstOrDefaultAsync(); ;
+          .FirstOrDefaultAsync();
 
         if (school is null)
             throw new ZeemlinException(404, "School not found");
 
         if (school.SchoolActivity != SchoolActivity.Active)
             throw new ZeemlinException(403, $"{school.Name} is temporarily inactive and cannot upload a book.");
-
-        var teacher = await _teacherRepository.SelectAll()
-            .Where(s => s.Id == dto.TeacherId)
-            .AsNoTracking()
-            .FirstOrDefaultAsync();
-
-        if (teacher is null)
-            throw new ZeemlinException(404, "Teacher not found");
 
         await ValidateBookAsync(dto.PdfUrl);
         await ValidatePhotoAsync(dto.BookPhotoUrl);

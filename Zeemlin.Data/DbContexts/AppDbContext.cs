@@ -2,6 +2,7 @@
 using Zeemlin.Domain.Entities;
 using Zeemlin.Domain.Entities.Assets;
 using Zeemlin.Domain.Entities.Events;
+using Zeemlin.Domain.Entities.Library;
 using Zeemlin.Domain.Entities.Questions;
 using Zeemlin.Domain.Entities.Users;
 using static Zeemlin.Data.DbContexts.EntityConfigurations.AssetsConfiguration;
@@ -18,12 +19,14 @@ namespace Zeemlin.Data.DbContexts
         // Schools
         public DbSet<School> School { get; set; }
         public DbSet<Course> Courses { get; set; }
+        public DbSet<Book> Books { get; set; }
 
         // Event
         public DbSet<Event> Events { get; set; }
         public DbSet<EventRegistration> EventsRegistration { get; set; }
 
         // Users
+        public DbSet<User> Users { get; set; }
         public DbSet<SuperAdmin> SuperAdmins { get; set; }
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Director> Directors { get; set; }
@@ -48,6 +51,7 @@ namespace Zeemlin.Data.DbContexts
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<Homework> Homework { get; set; }
         public DbSet<VideoLessonAsset> VideoLessons { get; set; }
+        public DbSet<StudentScore> StudentScores { get; set; }
 
         // Groups
         public DbSet<Group> Groups { get; set; }
@@ -96,7 +100,8 @@ namespace Zeemlin.Data.DbContexts
             modelBuilder.ApplyConfiguration(new LessonAttendanceConfiguration());
             modelBuilder.ApplyConfiguration(new VideoLessonAssetConfiguration());
             modelBuilder.ApplyConfiguration(new GradeConfiguration());
-
+            modelBuilder.ApplyConfiguration(new BookConfiguration());
+            modelBuilder.ApplyConfiguration(new StudentScoreConfiguration());
 
             // Event
             modelBuilder.ApplyConfiguration(new EventConfiguration());

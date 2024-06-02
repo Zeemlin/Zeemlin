@@ -32,4 +32,16 @@ public class LessonsController : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long id, [FromBody] LessonForUpdateDto dto)
         => Ok(await this._lessonService.ModifyAsync(id, dto));
+
+    [HttpGet("by-group/{groupId}")]
+    public async Task<IActionResult> GetLessonsByGroupAsync([FromRoute(Name = "groupId")] long groupId)
+    {
+        var lessons = await _lessonService.GetLessonsByGroupAsync(groupId);
+        if (lessons.Any())
+        {
+            return Ok(lessons);
+        }
+        return NotFound();
+    }
+
 }

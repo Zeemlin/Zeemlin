@@ -27,5 +27,6 @@ public class Student : User
     public ICollection<StudentGroup> StudentGroups { get; set; }
     public ICollection<ParentStudent> ParentStudents { get; set; }
     public ICollection<LessonAttendance> LessonAttendances { get; set; }
+    public ICollection<StudentScore> StudentScores { get; set; }
 
 }

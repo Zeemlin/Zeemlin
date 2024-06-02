@@ -71,8 +71,11 @@ public class AdminService : IAdminService
             throw new ZeemlinException(403, $"The {IsValidSchool?.Name} is temporarily inactive. Admin cannot be created.");
         }
 
+        var hasherResult = PasswordHelper.Hash(dto.Password);
         var mapped = _mapper.Map<Admin>(dto);
         mapped.CreatedAt = DateTime.UtcNow;
+        mapped.Salt = hasherResult.Salt;
+        mapped.Password = hasherResult.Hash;
         await _adminRepository.InsertAsync(mapped);
 
         return _mapper.Map<AdminForResultDto>(mapped);

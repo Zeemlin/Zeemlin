@@ -12,6 +12,6 @@ public class StudentScore : Auditable
     public Lesson Lesson { get; set; }
     public AssessmentType AssessmentType { get; set; }
     public DateTime AssessmentDate { get; set; }
-    public double Score { get; set; }
+    public int Score { get; set; }  
     public string? Remark { get; set; }
 }

@@ -9,4 +9,5 @@ public interface ILessonService
     Task<IEnumerable<LessonForResultDto>> RetrieveAllAsync();
     Task<LessonForResultDto> CreateAsync(LessonForCreationDto dto);
     Task<LessonForResultDto> ModifyAsync(long id, LessonForUpdateDto dto);
+    Task<IEnumerable<LessonForResultDto>> GetLessonsByGroupAsync(long groupId);
 }

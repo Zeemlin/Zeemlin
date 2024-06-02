@@ -172,6 +172,11 @@ public class SchoolConfiguration
                 .WithOne(v => v.Lesson)
                 .HasForeignKey(v => v.LessonId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(e => e.StudentScores)
+                .WithOne(v => v.Lesson)
+                .HasForeignKey(v => v.LessonId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 
@@ -338,4 +343,30 @@ public class SchoolConfiguration
 
         }
     }
+
+    public class StudentScoreConfiguration : IEntityTypeConfiguration<StudentScore>
+    {
+        public void Configure(EntityTypeBuilder<StudentScore> builder)
+        {
+            builder.ToTable("StudentScores");
+            builder.HasKey(s => s.Id);
+
+            builder.Property(s => s.StudentId).IsRequired();
+            builder.HasOne(s => s.Student)
+              .WithMany(u => u.StudentScores)
+              .HasForeignKey(s => s.StudentId);
+
+            builder.Property(s => s.LessonId).IsRequired();
+            builder.HasOne(s => s.Lesson)
+              .WithMany(l => l.StudentScores)
+              .HasForeignKey(s => s.LessonId);
+
+            builder.Property(s => s.AssessmentType).IsRequired();
+            builder.Property(s => s.AssessmentDate).IsRequired();
+            builder.Property(s => s.Score).IsRequired();
+            builder.Property(s => s.Remark);
+        }
+    }
+
+
 }

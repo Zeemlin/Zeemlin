@@ -53,7 +53,10 @@ public class ParentService : IParentService
     {
         await IsEmailOrPhoneInUseAsync(dto.Email, dto.PhoneNumber, dto.HouseNumber);
 
+        var hasherResult = PasswordHelper.Hash(dto.Password);
         var mapped = _mapper.Map<Parent>(dto);
+        mapped.Salt = hasherResult.Salt;
+        mapped.Password = hasherResult.Hash;
         mapped.CreatedAt = DateTime.UtcNow;
         var created = await _parentRepository.InsertAsync(mapped);
 
@@ -70,7 +73,24 @@ public class ParentService : IParentService
 
         if (isValidId is null)
             throw new ZeemlinException(404, "Not found");
-        await IsEmailOrPhoneInUseAsync(dto.Email, dto.PhoneNumber, dto.HouseNumber);
+
+        var existingPhoneNumber = await _parentRepository
+            .SelectAll()
+            .Where(p => p.PhoneNumber == dto.PhoneNumber)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (existingPhoneNumber is not null)
+            throw new ZeemlinException(409, "Phone number already exists");
+
+        var existingEmail = await _parentRepository
+            .SelectAll()
+            .Where(p => p.Email == dto.Email)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (existingEmail is not null)
+            throw new ZeemlinException(409, "Email already exists");
 
         var modify = _mapper.Map(dto, isValidId);
         modify.UpdatedAt = DateTime.UtcNow;
@@ -108,6 +128,9 @@ public class ParentService : IParentService
 
         if (parent is null)
             throw new ZeemlinException(404, "Parent not found.");
+
+        if (dto.HouseNumber <= 0)
+            throw new ZeemlinException(400, "House number cannot be less than or equal to zero. \n INVALID_HOUSE_NUMBER");
 
         var modify = _mapper.Map(dto, parent);
         modify.UpdatedAt = DateTime.UtcNow;

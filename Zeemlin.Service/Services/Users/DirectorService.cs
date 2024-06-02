@@ -61,8 +61,11 @@ public class DirectorService : IDirectorService
         if (IsValidPassportSeria is not null)
             throw new ZeemlinException(409, "PassportSeria already exists");
 
+        var hasherResult = PasswordHelper.Hash(dto.Password);
         var mapped = _mapper.Map<Director>(dto);
         mapped.CreatedAt = DateTime.UtcNow;
+        mapped.Salt = hasherResult.Salt;
+        mapped.Password = hasherResult.Hash;
         await _repository.InsertAsync(mapped);
 
         return _mapper.Map<DirectorForResultDto>(mapped);
@@ -140,7 +143,7 @@ public class DirectorService : IDirectorService
         return true;
     }
 
-    public async Task<bool> RemoveAsync(long id)
+    public async Task<bool> RemoveByIdAsync(long id)
     {
         var IsValidId = await _repository
             .SelectAll().AsNoTracking()

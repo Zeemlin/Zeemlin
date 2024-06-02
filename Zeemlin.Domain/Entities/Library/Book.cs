@@ -1,5 +1,4 @@
 ﻿using Zeemlin.Domain.Commons;
-using Zeemlin.Domain.Entities.Users;
 
 namespace Zeemlin.Domain.Entities.Library;
 
@@ -17,9 +16,6 @@ public class Book : Auditable
 
     public long SchoolId { get; set; }
     public School School { get; set; }
-
-    public long TeacherId { get; set; }
-    public Teacher Teacher { get; set; }
 
     // media files
     public string BookPhotoUrl { get; set; }

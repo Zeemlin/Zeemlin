@@ -6,6 +6,7 @@ using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Group;
+using Zeemlin.Service.DTOs.Users.Students;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces;
 
@@ -17,17 +18,23 @@ public class GroupService : IGroupService
     private readonly IGroupRepository _groupRepository;
     private readonly ICourseRepository _courseRepository;
     private readonly ISchoolRepository _schoolRepository;
+    private readonly IStudentGroupRepository _studentGroupRepository;
+    private readonly ILessonAttendanceRepository _lessonAttendanceRepository;
 
     public GroupService(
         IGroupRepository repository,
         IMapper mapper,
         ICourseRepository courseRepository,
-        ISchoolRepository schoolRepository)
+        ISchoolRepository schoolRepository,
+        IStudentGroupRepository studentGroupRepository,
+        ILessonAttendanceRepository lessonAttendanceRepository)
     {
         _mapper = mapper;
         _groupRepository = repository;
         _courseRepository = courseRepository;
         _schoolRepository = schoolRepository;
+        _studentGroupRepository = studentGroupRepository;
+        _lessonAttendanceRepository = lessonAttendanceRepository;
     }
 
     public async Task<GroupForResultDto> CreateAsync(GroupForCreationDto dto)
@@ -356,5 +363,64 @@ public class GroupService : IGroupService
 
         return teachers;
     }
+
+    public async Task<ICollection<StudentRankingDto>> GetStudentRankingsInGroup(long groupId)
+    {
+        var group = await _groupRepository.SelectAll()
+            .Where(g => g.Id == groupId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (group == null)
+            throw new ZeemlinException(404, "Group Not Found");
+
+        var students = await _studentGroupRepository.GetStudentsByGroup(groupId);
+
+        var studentRankings = new List<StudentRankingDto>();
+
+        foreach (var student in students)
+        {
+            var attendances = await _lessonAttendanceRepository.GetStudentAttendancesByGroup(groupId, student.Id) ?? new List<LessonAttendance>();
+
+            int attendanceCount = attendances.Count(a =>
+                a.LessonAttendanceType == LessonAttendanceType.Yes ||
+                a.LessonAttendanceType == LessonAttendanceType.PartiallyPresent ||
+                a.LessonAttendanceType == LessonAttendanceType.Online);
+
+            var studentScores = student.StudentScores
+                .Where(s => s.Lesson.Group.Id == groupId);
+
+            double averageScore = studentScores.Any()
+                ? studentScores.Average(s => s.Score)
+                : 0;
+
+            double weightedAverage = 0.7 * attendanceCount + 0.3 * averageScore;
+
+            var studentRanking = new StudentRankingDto
+            {
+                StudentId = student.Id,
+                StudentUniqueId = student.StudentUniqueId,
+                FirstName = student.FirstName,
+                LastName = student.LastName,
+                AttendanceCount = attendanceCount,
+                AverageScore = averageScore,
+                WeightedAverage = weightedAverage,
+            };
+
+            studentRankings.Add(studentRanking);
+        }
+
+        studentRankings.Sort((result1, result2) =>
+        {
+            int weightedComparison = result2.WeightedAverage.CompareTo(result1.WeightedAverage);
+            return weightedComparison != 0 ? weightedComparison : result1.FirstName.CompareTo(result2.FirstName);
+        });
+
+        return studentRankings;
+    }
+
+
+
+
 
 }

@@ -3,8 +3,8 @@
 //using System.IdentityModel.Tokens.Jwt;
 //using System.Security.Claims;
 //using System.Text;
-//using Zeemlin.Domain.Entities;
-//using Zeemlin.Service.DTOs.User;
+//using Zeemlin.Domain.Entities.Users;
+//using Zeemlin.Service.DTOs.Logins;
 //using Zeemlin.Service.Exceptions;
 //using Zeemlin.Service.Interfaces;
 
@@ -22,20 +22,20 @@
 //    }
 
 
-//    public async Task<LoginForResult> AuthenticateAsync(LoginDto login)
+//    public async Task<LoginResultDto> AuthenticateAsync(LoginDto login)
 //    {
 //        var user = await _userService.RetrieveByEmailAsync(login.Email);
 //        if (user is null)
 //            throw new ZeemlinException(400, "Email or Password is incorrect");
 
-//        return new LoginForResult
+//        return new LoginResultDto
 //        {
 //            Token = GenerateToken(user)
 //        };
 
 //    }
 
-//    private string GenerateToken(Student user)
+//    private string GenerateToken(User user)
 //    {
 //        var tokenHandler = new JwtSecurityTokenHandler();
 //        var tokenKey = Encoding.UTF8.GetBytes(_configuration["JWT:Key"]);
@@ -44,8 +44,7 @@
 //            Subject = new ClaimsIdentity(new Claim[]
 //            {
 //                new Claim("Id",user.Id.ToString()),
-//                new Claim(ClaimTypes.Name,user.FirstName),
-//                new Claim(ClaimTypes.Email,user.Email)
+//                new Claim(ClaimTypes.Email, user.Email),
 //            }),
 //            Audience = _configuration["JWT:Audience"],
 //            Issuer = _configuration["JWT:Issuer"],

@@ -187,6 +187,12 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                     .WithOne(s => s.Student)
                     .HasForeignKey(s => s.StudentId)
                     .OnDelete(DeleteBehavior.Cascade);
+
+                builder.HasMany(ps => ps.StudentScores)
+                    .WithOne(s => s.Student)
+                    .HasForeignKey(s => s.StudentId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
             }
         }
     }
