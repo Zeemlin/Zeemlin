@@ -26,6 +26,7 @@ namespace Zeemlin.Data.DbContexts
         public DbSet<EventRegistration> EventsRegistration { get; set; }
 
         // Users
+        public DbSet<User> Users { get; set; }
         public DbSet<SuperAdmin> SuperAdmins { get; set; }
         public DbSet<Admin> Admins { get; set; }
         public DbSet<Director> Directors { get; set; }
