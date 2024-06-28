@@ -3,6 +3,7 @@
 //using System.IdentityModel.Tokens.Jwt;
 //using System.Security.Claims;
 //using System.Text;
+//using Zeemlin.Data.IRepositries.Users;
 //using Zeemlin.Domain.Entities.Users;
 //using Zeemlin.Service.DTOs.Logins;
 //using Zeemlin.Service.Exceptions;
@@ -12,20 +13,21 @@
 
 //public class AuthService : IAuthService
 //{
-//    private readonly IUserService _userService;
+//    private readonly IUserRepository _userRepository;
 //    private readonly IConfiguration _configuration;
 
-//    public AuthService(IUserService userService, IConfiguration configuration)
+//    public AuthService(IConfiguration configuration, IUserRepository userRepository)
 //    {
-//        _userService = userService;
+
 //        _configuration = configuration;
+//        _userRepository = userRepository;
 //    }
 
 
 //    public async Task<LoginResultDto> AuthenticateAsync(LoginDto login)
 //    {
-//        var user = await _userService.RetrieveByEmailAsync(login.Email);
-//        if (user is null)
+//        var user = await _userRepository.ExistsAsync(login.Email);
+//        if (user == null)
 //            throw new ZeemlinException(400, "Email or Password is incorrect");
 
 //        return new LoginResultDto

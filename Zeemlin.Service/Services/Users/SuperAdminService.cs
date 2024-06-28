@@ -35,7 +35,7 @@ public class SuperAdminService : ISuperAdminService
         var IsValidUserEmail = await _repository
             .SelectAll()
             .AsNoTracking()
-            .Where(u => u.Email.ToLower() == dto.Email.ToLower())
+            .Where(u => u.User.Email.ToLower() == dto.Email.ToLower())
             .FirstOrDefaultAsync();
 
         if (IsValidUserEmail is not null)
@@ -80,7 +80,7 @@ public class SuperAdminService : ISuperAdminService
         var IsValidUserEmail = await _repository
             .SelectAll()
             .AsNoTracking()
-            .Where(u => u.Email.ToLower() == dto.Email.ToLower())
+            .Where(u => u.User.Email.ToLower() == dto.Email.ToLower())
             .FirstOrDefaultAsync();
 
         if (IsValidUserEmail is not null)
@@ -105,17 +105,18 @@ public class SuperAdminService : ISuperAdminService
     public async Task<bool> ChangePasswordAsync(string email, SuperAdminForChangePasswordDto dto)
     {
         var user = await _repository.SelectAll()
-            .Where(u => u.Email == email)
+            .Where(u => u.User.Email == email)
+            .Include(s=> s.User)
             .AsNoTracking()
             .FirstOrDefaultAsync();
-        if (user is null || !PasswordHelper.Verify(dto.OldPassword, user.Salt, user.Password))
+        if (user is null || !PasswordHelper.Verify(dto.OldPassword, user.User.Salt, user.User.Password))
             throw new ZeemlinException(404, "User or Password is incorrect");
         else if (dto.NewPassword != dto.ConfirmPassword)
             throw new ZeemlinException(400, "New password and confirm password aren't equal");
 
         var hash = PasswordHelper.Hash(dto.ConfirmPassword);
-        user.Salt = hash.Salt;
-        user.Password = hash.Hash;
+        user.User.Salt = hash.Salt;
+        user.User.Password = hash.Hash;
         var updated = await _repository.UpdateAsync(user);
 
         return true;

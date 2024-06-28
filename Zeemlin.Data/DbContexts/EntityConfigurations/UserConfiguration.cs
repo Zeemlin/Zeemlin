@@ -11,16 +11,16 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
         {
             public void Configure(EntityTypeBuilder<SuperAdmin> builder)
             {
-                builder.ToTable("SuperAdmins");
-                builder.HasKey(e => e.Id);
+                //builder.ToTable("SuperAdmins");
+                //builder.HasKey(e => e.Id);
 
-                builder.Property(e => e.Username).IsRequired().HasMaxLength(50);
-                builder.Property(e => e.FirstName).IsRequired().HasMaxLength(30);
-                builder.Property(e => e.LastName).IsRequired().HasMaxLength(30);
-                builder.Property(e => e.Email).IsRequired().HasMaxLength(50);
-                builder.Property(e => e.Password).IsRequired();
-                builder.Property(e => e.Salt).IsRequired();
-                builder.Property(e => e.Gender).IsRequired();
+                //builder.Property(e => e.Username).IsRequired().HasMaxLength(50);
+                //builder.Property(e => e.FirstName).IsRequired().HasMaxLength(30);
+                //builder.Property(e => e.LastName).IsRequired().HasMaxLength(30);
+                //builder.Property(e => e.User.Email).IsRequired().HasMaxLength(50);
+                //builder.Property(e => e.User.Password).IsRequired();
+                //builder.Property(e => e.User.Salt).IsRequired();
+                //builder.Property(e => e.Gender).IsRequired();
                 builder.Property(e => e.PassportSeria).IsRequired().HasMaxLength(9);
 
             }
