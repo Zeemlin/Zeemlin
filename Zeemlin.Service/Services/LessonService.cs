@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.DTOs.Lesson;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces;
@@ -27,7 +28,6 @@ public class LessonService : ILessonService
         this.teacherRepository = teacherRepository;
     }
 
-
     public async Task<LessonForResultDto> CreateAsync(LessonForCreationDto dto)
     {
         var group = await groupRepository.SelectAll()
@@ -37,6 +37,16 @@ public class LessonService : ILessonService
 
         if (group is null)
             throw new ZeemlinException(404, "Group not found");
+
+        var school = await groupRepository.SelectAll()
+            .Where(l => l.Id == dto.GroupId)
+            .Include(l => l.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Lesson cannot be created.");
 
         var teacher = await teacherRepository.SelectAll()
             .Where(t => t.Id == dto.TeacherId)
@@ -86,6 +96,16 @@ public class LessonService : ILessonService
 
         if (group is null)
             throw new ZeemlinException(404, "Group not found");
+
+        var school = await groupRepository.SelectAll()
+            .Where(l => l.Id == dto.GroupId)
+            .Include(l => l.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Lesson information cannot be changed.");
 
         var teacher = await teacherRepository.SelectAll()
             .Where(t => t.Id == dto.TeacherId)
@@ -138,8 +158,6 @@ public class LessonService : ILessonService
         return _mapper.Map<IEnumerable<LessonForResultDto>>(lessons);
     }
 
-
-
     public async Task<LessonForResultDto> RetrieveIdAsync(long id)
     {
         var lesson = await lessonRepository.SelectAll()
@@ -151,4 +169,15 @@ public class LessonService : ILessonService
 
         return _mapper.Map<LessonForResultDto>(lesson);
     }
+
+    public async Task<IEnumerable<LessonForResultDto>> GetLessonsByGroupAsync(long groupId)
+    {
+        var lessons = await lessonRepository.SelectAll()
+            .Where(l => l.GroupId == groupId)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return _mapper.Map<IEnumerable<LessonForResultDto>>(lessons);
+    }
+
 }

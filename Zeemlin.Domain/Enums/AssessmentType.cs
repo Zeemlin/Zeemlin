@@ -7,9 +7,6 @@ namespace Zeemlin.Domain.Enums
         Activity = 1,
         Classwork,
         Homework,
-        Projects,
         Test,
-        FinalExams,
-
     }
 }

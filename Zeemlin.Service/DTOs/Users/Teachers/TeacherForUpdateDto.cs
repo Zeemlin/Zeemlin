@@ -1,6 +1,6 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using Zeemlin.Domain.Enums;
+using Zeemlin.Service.Commons.Attributes;
 
 namespace Zeemlin.Service.DTOs.Users.Teachers
 {
@@ -10,19 +10,17 @@ namespace Zeemlin.Service.DTOs.Users.Teachers
         public string FirstName { get; set; }
         [Required, MaxLength(50)]
         public string LastName { get; set; }
-        public string DateOfBirth { get; set; }
-        [Phone(ErrorMessage = "Phone number is required")]
+        [Required]
+        public DateTime DateOfBirth { get; set; }
+        [PhoneNumber(ErrorMessage = "Phone number is required")]
         public string PhoneNumber { get; set; }
         [Required(ErrorMessage = "Email is required")]
         [EmailAddress]
         public string Email { get; set; }
-        [PasswordPropertyText]
-        public string Password { get; set; }
-        public string Biography { get; set; }
+        public string? Biography { get; set; }
         [Required]
-        [MaxLength(50)]
-        public string DistrictName { get; set; }
         public ScienceType ScienceType { get; set; }
+        [Required]
         public GenderType genderType { get; set; }
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Lesson;
@@ -33,9 +34,19 @@ public class SubjectService : ISubjectService
             .AsNoTracking()
             .Where(l => l.Id == dto.LessonId)
             .FirstOrDefaultAsync();
+
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found");
 
+        var school = await _lessonRepository.SelectAll()
+            .Where(l => l.Id == dto.LessonId)
+            .Include(l => l.Group.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Group.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Subject cannot be created.");
 
         var mapped = _mapper.Map<Subject>(dto);
         mapped.CreatedAt = DateTime.UtcNow;
@@ -61,6 +72,16 @@ public class SubjectService : ISubjectService
             .FirstOrDefaultAsync();
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found");
+
+        var school = await _lessonRepository.SelectAll()
+            .Where(l => l.Id == dto.LessonId)
+            .Include(l => l.Group.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Group.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Subject information cannot be changed.");
 
         var mappedsubject = _mapper.Map(dto, update);
         mappedsubject.UpdatedAt = DateTime.UtcNow;
@@ -129,6 +150,9 @@ public class SubjectService : ISubjectService
             .AsNoTracking()
             .ToPagedList(@params)
             .ToListAsync();
+
+        if (subjects is null)
+            throw new ZeemlinException(404, "Lesson Not Found");
 
         var result = _mapper.Map<IEnumerable<SubjectForResultDto>>(subjects);
 

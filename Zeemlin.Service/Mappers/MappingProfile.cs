@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Entities.Users;
+using Zeemlin.Domain.Entities.Assets;
+using Zeemlin.Domain.Entities.Events;
 using Zeemlin.Service.DTOs.Grade;
 using Zeemlin.Service.DTOs.Group;
 using Zeemlin.Service.DTOs.Homework;
@@ -9,10 +12,8 @@ using Zeemlin.Service.DTOs.Schools;
 using Zeemlin.Service.DTOs.TeacherGroups;
 using Zeemlin.Service.DTOs.Subjects;
 using Zeemlin.Service.DTOs.Courses;
-using Zeemlin.Domain.Entities.Assets;
 using Zeemlin.Service.DTOs.Assets.HomeworkAssets;
 using Zeemlin.Service.DTOs.LessonAttendances;
-using Zeemlin.Domain.Entities.Users;
 using Zeemlin.Service.DTOs.Users.SuperAdmins;
 using Zeemlin.Service.DTOs.Users.Admins;
 using Zeemlin.Service.DTOs.Users.Directors;
@@ -20,7 +21,6 @@ using Zeemlin.Service.DTOs.Assets.SchoolAssets;
 using Zeemlin.Service.DTOs.Assets.TeacherAssets;
 using Zeemlin.Service.DTOs.Assets.SchoolLogoAssets;
 using Zeemlin.Service.DTOs.Assets.EventAssets;
-using Zeemlin.Domain.Entities.Events;
 using Zeemlin.Service.DTOs.Events;
 using Zeemlin.Service.DTOs.Users.Students;
 using Zeemlin.Service.DTOs.Users.Teachers;
@@ -28,6 +28,8 @@ using Zeemlin.Service.DTOs.Users.Parents;
 using Zeemlin.Service.DTOs.ParentStudents;
 using Zeemlin.Service.DTOs.Assets.VideoLessonAssets;
 using Zeemlin.Service.DTOs.Events.EventRegistrations;
+using Zeemlin.Service.DTOs.Assets.StudentAwards;
+using Zeemlin.Service.DTOs.StudentScores;
 
 namespace Zeemlin.Service.Mappers;
 
@@ -38,36 +40,45 @@ public class MappingProfile : Profile
         #region Users
         CreateMap<Student, StudentForCreationDto>().ReverseMap();
         CreateMap<Student, StudentForUpdateDto>().ReverseMap();
+        CreateMap<Student, StudentForChangePasswordDto>().ReverseMap();
+        CreateMap<Student, StudentAddressForUpdateDto>().ReverseMap();
         CreateMap<Student, StudentForResultDto>().ReverseMap();
 
         CreateMap<Teacher, TeacherForCreationDto>().ReverseMap();
         CreateMap<Teacher, TeacherForUpdateDto>().ReverseMap();
+        CreateMap<Teacher, TeacherForChangePasswordDto>().ReverseMap();
+        CreateMap<Teacher, TeacherAddressForUpdateDto>().ReverseMap();
         CreateMap<Teacher, TeacherForResultDto>().ReverseMap();
         CreateMap<Teacher, TeacherSearchResultDto>().ReverseMap();
-        CreateMap<Teacher, TeacherSearchForSuperAdmin>().ReverseMap();
         CreateMap<Teacher, FilteredTeacherDTO>();
 
         CreateMap<Parent, ParentForCreationDto>().ReverseMap();
         CreateMap<Parent, ParentForUpdateDto>().ReverseMap();
+        CreateMap<Parent, ParentAddressForUpdateDto>().ReverseMap();
+        CreateMap<Parent, ParentForChangePasswordDto>().ReverseMap();
         CreateMap<Parent, ParentForResultDto>().ReverseMap();
 
         CreateMap<Admin, AdminForCreationDto>().ReverseMap();
         CreateMap<Admin, AdminForUpdateDto>().ReverseMap();
+        CreateMap<Admin, AdminForChangePasswordDto>().ReverseMap();
         CreateMap<Admin, AdminForResultDto>().ReverseMap();
 
 
         CreateMap<Director, DirectorForCreationDto>().ReverseMap();
         CreateMap<Director, DirectorForUpdateDto>().ReverseMap();
+        CreateMap<Director, DirectorForChangePasswordDto>().ReverseMap();
         CreateMap<Director, DirectorForResultDto>().ReverseMap();
 
         CreateMap<SuperAdmin, SuperAdminForCreationDto>().ReverseMap();
         CreateMap<SuperAdmin, SuperAdminForUpdateDto>().ReverseMap();
+        CreateMap<SuperAdmin, SuperAdminForChangePasswordDto>().ReverseMap();
         CreateMap<SuperAdmin, SuperAdminForResultDto>().ReverseMap();
         #endregion
 
         #region Schools
         CreateMap<School, SchoolForCreationDto>().ReverseMap();
         CreateMap<School, SchoolForUpdateDto>().ReverseMap();
+        CreateMap<School, SchoolActivityForUpdateDto>().ReverseMap();
         CreateMap<School, SchoolForResultDto>().ReverseMap();
 
         CreateMap<Event, EventForCreationDto>().ReverseMap();
@@ -110,6 +121,10 @@ public class MappingProfile : Profile
         CreateMap<LessonAttendance, LessonAttendanceForUpdateDto>().ReverseMap();
         CreateMap<LessonAttendance, LessonAttendanceForResultDto>().ReverseMap();
         CreateMap<LessonAttendance, StudentAttendanceReportDto>().ReverseMap();
+
+        CreateMap<StudentScore, StudentScoreForCreationDto>().ReverseMap();
+        CreateMap<StudentScore, StudentScoreForUpdateDto>().ReverseMap();
+        CreateMap<StudentScore, StudentScoreForResultDto>().ReverseMap();
         #endregion
 
         #region Relationships
@@ -147,6 +162,9 @@ public class MappingProfile : Profile
         CreateMap<VideoLessonAsset, VideoLessonAssetForCreationDto>().ReverseMap();
         CreateMap<VideoLessonAsset, VideoLessonAssetForUpdateDto>().ReverseMap();
         CreateMap<VideoLessonAsset, VideoLessonAssetForResultDto>().ReverseMap();
+
+        CreateMap<StudentAward, StudentAwardForCreationDto>().ReverseMap();
+        CreateMap<StudentAward, StudentAwardForResultDto>().ReverseMap();
         #endregion
     }
 }

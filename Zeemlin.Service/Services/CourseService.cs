@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Zeemlin.Data.DbContexts;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Enums;
+using Zeemlin.Service.Commons.Extentions;
+using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Courses;
 using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces;
@@ -13,41 +15,37 @@ public class CourseService : ICourseServices
 {
     private readonly IMapper _mapper;
     private readonly ICourseRepository _courseRepository;
-    private readonly AppDbContext _context;
+    private readonly ISchoolRepository _schoolRepository;
 
-    public CourseService(IMapper mapper, ICourseRepository courseRepository, AppDbContext context)
+    public CourseService(IMapper mapper, ICourseRepository courseRepository, ISchoolRepository schoolRepository)
     {
         _mapper = mapper;
         _courseRepository = courseRepository;
-        _context = context;
+        _schoolRepository = schoolRepository;
     }
-
 
     public async Task<CourseForResultDto> CreateAsync(CourseForCreationDto dto)
     {
-        // Validate SchoolId range
-        if (dto.SchoolId < 1) // Adjust the range based on your valid school IDs
+        var IsValidSchoolId = await _schoolRepository.SelectAll()
+            .Where(s => s.Id == dto.SchoolId)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+
+        if (IsValidSchoolId is null)
+            throw new ZeemlinException(404, "School Not Found");
+
+        if (IsValidSchoolId?.SchoolActivity != SchoolActivity.Active)
         {
-            throw new ZeemlinException(400, "Invalid SchoolId. School ID must be between 1 and 100.");
+            throw new ZeemlinException(403, $"The {IsValidSchoolId.Name} is temporarily inactive. Course cannot be created.");
         }
 
-        // Check for duplicate course name within the same school
         var existingCourse = await _courseRepository.SelectAll()
             .AsNoTracking()
             .Where(c => c.Name.ToLower() == dto.Name.ToLower() && c.SchoolId == dto.SchoolId)
             .FirstOrDefaultAsync();
 
         if (existingCourse is not null)
-        {
-            throw new ZeemlinException(409, "Course with the same name already exists in this school.");
-        }
-
-        var IsValidSchoolNumber = await _context.School.FirstOrDefaultAsync(s => s.Id == dto.SchoolId);
-
-        if (IsValidSchoolNumber is null)
-            throw new ZeemlinException(404, "School Not Found");
-
-
+            throw new ZeemlinException(409, $"Course with the same name already exists in this {IsValidSchoolId.Name}.");
 
         var mappedCourse = _mapper.Map<Course>(dto);
         mappedCourse.CreatedAt = DateTime.UtcNow;
@@ -67,23 +65,26 @@ public class CourseService : ICourseServices
         if (IsValidId is null)
             throw new ZeemlinException(404, "Course not found");
 
-        var existingCourse = await _courseRepository.SelectAll()
-        .AsNoTracking()
-        .Where(c => c.Name.ToLower() == dto.Name.ToLower() && c.SchoolId == dto.SchoolId)
-        .FirstOrDefaultAsync();
-
-        if (existingCourse is not null)
-        {
-            throw new ZeemlinException(409, "Course with the same name already exists in this school.");
-        }
-
-        var school = await _courseRepository.SelectAll()
+        var school = await _schoolRepository.SelectAll()
             .AsNoTracking()
-            .Where(s => s.SchoolId == dto.SchoolId)
+            .Where(s => s.Id == dto.SchoolId)
             .FirstOrDefaultAsync();
 
         if (school is null)
             throw new ZeemlinException(404, "School Not Found");
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {school.Name} is temporarily inactive.  It is not possible to make changes to the {IsValidId.Name} .");
+        }
+
+        var existingCourse = await _courseRepository.SelectAll()
+            .AsNoTracking()
+            .Where(c => c.Name.ToLower() == dto.Name.ToLower() && c.SchoolId == dto.SchoolId)
+            .FirstOrDefaultAsync();
+
+        if (existingCourse is not null)
+            throw new ZeemlinException(409, $"Course with the same name already exists in this {school.Name}.");
 
         var mapped = _mapper.Map(dto, IsValidId);
         mapped.UpdatedAt = DateTime.UtcNow;
@@ -106,24 +107,65 @@ public class CourseService : ICourseServices
         return true;
     }
 
-    public async Task<IEnumerable<CourseForResultDto>> RetrieveAllAsync()
+    public async Task<IEnumerable<CourseForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {
-        var courses = await _courseRepository.SelectAll().AsNoTracking().ToListAsync();
-        return _mapper.Map<IEnumerable<CourseForResultDto>>(courses);
-    }
+        var courses = await _courseRepository.SelectAll()
+          .Include(c => c.Groups) 
+          .AsNoTracking()
+          .ToPagedList(@params)
+          .ToListAsync();
 
+        var courseDtos = _mapper.Map<IEnumerable<CourseForResultDto>>(courses);
+        foreach (var courseDto in courseDtos)
+        {
+            courseDto.GroupCount = courseDto.GroupForResultDto?.Count ?? 0;
+        }
+
+        return courseDtos;
+    }
 
     public async Task<CourseForResultDto> RetrieveIdAsync(long id)
     {
-        var IsValidId = await _courseRepository.SelectAll()
-            .AsNoTracking()
-            .Where(u => u.Id == id)
-            .FirstOrDefaultAsync();
+        var course = await _courseRepository.SelectAll()
+          .Include(c => c.Groups)
+          .Where(u => u.Id == id)
+          .AsNoTracking()
+          .FirstOrDefaultAsync();
 
-        if (IsValidId is null)
+        if (course is null)
             throw new ZeemlinException(404, "Course not found");
 
-        return _mapper.Map<CourseForResultDto>(IsValidId);
+        var courseDto = _mapper.Map<CourseForResultDto>(course);
+        courseDto.GroupCount = course.Groups?.Count ?? 0; 
+
+        return courseDto;
     }
+
+    public async Task<IEnumerable<CourseForResultDto>> RetrieveAllBySchoolIdAsync(long schoolId, PaginationParams @params)
+    {
+        var school = await _schoolRepository.SelectAll()
+            .AsNoTracking()
+            .Where(s => s.Id == schoolId)
+            .FirstOrDefaultAsync();
+
+        if (school is null)
+            throw new ZeemlinException(404, "School not found");
+
+        var courses = await _courseRepository.SelectAll()
+            .Include(c => c.Groups) 
+            .Where(c => c.SchoolId == schoolId)
+            .AsNoTracking()
+            .ToPagedList(@params)
+            .ToListAsync();
+
+        var courseDtos = _mapper.Map<IEnumerable<CourseForResultDto>>(courses);
+        foreach (var courseDto in courseDtos)
+        {
+            courseDto.GroupCount = await _courseRepository.GetGroupCountAsync(courseDto.Id);
+        }
+
+        return courseDtos;
+    }
+
 
 }

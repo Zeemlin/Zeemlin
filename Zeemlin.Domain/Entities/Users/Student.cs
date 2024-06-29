@@ -1,50 +1,32 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using Zeemlin.Domain.Commons;
-using Zeemlin.Domain.Entities.Events;
-using Zeemlin.Domain.Enums;
+﻿using Zeemlin.Domain.Enums;
+using Zeemlin.Domain.Entities.Assets;
 
 namespace Zeemlin.Domain.Entities.Users;
 
-public class Student : Auditable
+public class Student : User
 {
-    [Required]
-    [MaxLength(50)]
     public string FirstName { get; set; }
-    [Required]
-    [MaxLength(50)]
     public string LastName { get; set; }
     public DateTime DateOfBirth { get; set; }
     public string FatherName { get; set; }
     public GenderType genderType { get; set; }
-    [Phone]
     public string PhoneNumber { get; set; }
-    [EmailAddress]
-    public string Email { get; set; }
-    [PasswordPropertyText]
-    public string Password { get; set; }
 
     // Address
-    [Required]
-    [MaxLength(50)]
-    public string DistrictName { get; set; } // Tuman nomi
-    [Required]
-    [MaxLength(50)]
-    public string GeneralAddressMFY { get; set; } // MFY
-    [Required]
-    [MaxLength(100)]
-    public string StreetName { get; set; } // Ko'cha nomi
-    public short HouseNumber { get; set; } // Uy raqami (for non-apartment addresses)
+    public Region Region { get; set; }
+    public string DistrictName { get; set; } 
+    public string GeneralAddressMFY { get; set; } 
+    public string StreetName { get; set; } 
+    public short HouseNumber { get; set; } 
 
-    [Required]
 
     public string StudentUniqueId { get; set; }
 
 
-    public ICollection<School> Schools { get; set; }
+    public ICollection<StudentAward> StudentAwards { get; set; }
     public ICollection<StudentGroup> StudentGroups { get; set; }
     public ICollection<ParentStudent> ParentStudents { get; set; }
     public ICollection<LessonAttendance> LessonAttendances { get; set; }
-    public ICollection<Event> Events { get; set; }
+    public ICollection<StudentScore> StudentScores { get; set; }
 
 }

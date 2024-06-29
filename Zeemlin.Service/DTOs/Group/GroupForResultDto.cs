@@ -11,7 +11,5 @@ public class GroupForResultDto
     public string TeacherLastName { get; set; }
     public int TotalTeacherCount { get; set; }
     public int StudentCount { get; set; }
-
-    public ICollection<GroupDataResultDto> GroupData { get; set; }
     
 }

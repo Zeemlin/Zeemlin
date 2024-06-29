@@ -16,30 +16,39 @@ public class SchoolConfiguration
             builder.ToTable("Schools");
             builder.HasKey(s => s.Id);
 
-            // Define property configurations
-            builder.Property(s => s.SchoolNumber).IsRequired();
             builder.Property(s => s.SchoolType).IsRequired();
             builder.Property(s => s.Name).IsRequired().HasMaxLength(255);
-            builder.Property(s => s.Description).IsRequired().HasMaxLength(2000);
-            builder.Property(s => s.Country).IsRequired();
+            builder.Property(s => s.Description).HasMaxLength(2000);
             builder.Property(s => s.Region).IsRequired();
             builder.Property(s => s.DistrictName).IsRequired().HasMaxLength(50);
             builder.Property(s => s.GeneralAddressMFY).IsRequired().HasMaxLength(50);
             builder.Property(s => s.StreetName).IsRequired().HasMaxLength(50);
             builder.Property(s => s.CallCenter);
             builder.Property(s => s.EmailCenter);
-            builder.Property(s => s.Website);
+            builder.Property(s => s.Website).HasMaxLength(255);
+            builder.Property(s => s.SchoolActivity).IsRequired();
+            builder.Property(s => s.EndDateOfActivity).IsRequired();
 
-            // Define relationships
             builder.HasMany(s => s.Asset)
               .WithOne(a => a.School)
-              .HasForeignKey(a => a.SchoolId);
+              .HasForeignKey(a => a.SchoolId)
+              .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(s => s.Admins)
+              .WithOne(c => c.School)
+              .HasForeignKey(c => c.SchoolId)
+              .OnDelete(DeleteBehavior.Cascade);
 
             builder.HasMany(s => s.Courses)
               .WithOne(c => c.School)
-              .HasForeignKey(c => c.SchoolId);
+              .HasForeignKey(c => c.SchoolId)
+              .OnDelete(DeleteBehavior.Cascade);
 
-            // One-to-One relationship with cascade delete for SchoolLogoAsset
+            builder.HasMany(s => s.Books)
+              .WithOne(c => c.School)
+              .HasForeignKey(c => c.SchoolId)
+              .OnDelete(DeleteBehavior.Cascade);
+
             builder.HasOne(s => s.SchoolLogoAsset)
               .WithOne(a => a.School)
               .HasForeignKey<SchoolLogoAsset>(a => a.SchoolId)
@@ -55,8 +64,8 @@ public class SchoolConfiguration
             builder.ToTable("Courses");
             builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.Name).IsRequired(); ;
-            builder.Property(e => e.Description);
+            builder.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            builder.Property(e => e.Description).HasMaxLength(1000);
             builder.Property(e => e.price).IsRequired();
             builder.Property(e => e.SchoolId).IsRequired();
 
@@ -75,7 +84,7 @@ public class SchoolConfiguration
             builder.HasKey(e => e.Id);
 
             builder.Property(e => e.Name).IsRequired().HasMaxLength(100);
-            builder.Property(e => e.Description);
+            builder.Property(e => e.Description).HasMaxLength(1000);
             builder.Property(e => e.CourseId).IsRequired();
             
 
@@ -137,36 +146,37 @@ public class SchoolConfiguration
             builder.ToTable("Lessons");
             builder.HasKey(e => e.Id);
 
-            // Define properties with data types
-            builder.Property(e => e.Title).IsRequired().HasMaxLength(255); // Enforce title length
-            builder.Property(e => e.Description);
-            builder.Property(e => e.StartDate).IsRequired(); // Make sure start date is required
-            builder.Property(e => e.EndDate).IsRequired(); // Make sure end date is required
+            builder.Property(e => e.Title).IsRequired().HasMaxLength(255); 
+            builder.Property(e => e.Description).HasMaxLength(1000);
+            builder.Property(e => e.StartDate).IsRequired(); 
+            builder.Property(e => e.EndDate).IsRequired(); 
             builder.Property(e => e.GroupId).IsRequired();
             builder.Property(e => e.TeacherId).IsRequired();
 
-            // Foreign key relationships (One-to-Many)
             builder.HasMany(e => e.Homework)
                 .WithOne(h => h.Lesson)
                 .HasForeignKey(h => h.LessonId)
-                .OnDelete(DeleteBehavior.Cascade); // Cascade delete on Lesson deletion
+                .OnDelete(DeleteBehavior.Cascade); 
 
             builder.HasMany(e => e.Subjects)
                 .WithOne(s => s.Lesson)
                 .HasForeignKey(s => s.LessonId)
-                .OnDelete(DeleteBehavior.Cascade); // Cascade delete on Lesson deletion
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // One-to-Many relationship with Question
             builder.HasMany(e => e.Questions)
                 .WithOne(q => q.Lesson)
                 .HasForeignKey(q => q.LessonId)
-                .OnDelete(DeleteBehavior.Cascade); // Cascade delete on Lesson deletion
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // One-to-Many relationship with VideoLessonAsset
             builder.HasMany(e => e.VideoLessons)
                 .WithOne(v => v.Lesson)
                 .HasForeignKey(v => v.LessonId)
-                .OnDelete(DeleteBehavior.Cascade); // Cascade delete on Lesson deletion
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasMany(e => e.StudentScores)
+                .WithOne(v => v.Lesson)
+                .HasForeignKey(v => v.LessonId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 
@@ -179,8 +189,8 @@ public class SchoolConfiguration
             builder.ToTable("Homeworks");
             builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.Title);
-            builder.Property(e => e.Description);
+            builder.Property(e => e.Title).HasMaxLength(100);
+            builder.Property(e => e.Description).HasMaxLength(1000);
             builder.Property(e => e.Deadline).IsRequired();
             builder.Property(e => e.LessonId).IsRequired();
 
@@ -198,8 +208,8 @@ public class SchoolConfiguration
             builder.ToTable("Subjects");
             builder.HasKey(e => e.Id);
 
-            builder.Property(e => e.Name);
-            builder.Property(e => e.Description);
+            builder.Property(e => e.Name).IsRequired().HasMaxLength(100);
+            builder.Property(e => e.Description).HasMaxLength(1000);
             builder.Property(e => e.LessonId).IsRequired();
         }
     }
@@ -258,9 +268,9 @@ public class SchoolConfiguration
 
             builder.Property(q => q.Text).IsRequired();
             builder.Property(q => q.Description);
-            builder.Property(q => q.CreatedAt); // Consider adding creation date property
+            builder.Property(q => q.CreatedAt);
 
-            builder.HasMany(q => q.QuestionAssets) // Corrected to HasMany
+            builder.HasMany(q => q.QuestionAssets)
                 .WithOne(a => a.Question)
                 .HasForeignKey(a => a.QuestionId)
                 .OnDelete(DeleteBehavior.Cascade);
@@ -291,19 +301,19 @@ public class SchoolConfiguration
             builder.ToTable("Events");
             builder.HasKey(a => a.Id);
 
-            // Define required properties
-            builder.Property(e => e.Title).IsRequired();
-            builder.Property(e => e.Orginizer).IsRequired();
-            builder.Property(e => e.Location).IsRequired();
+            builder.Property(e => e.Title).IsRequired().HasMaxLength(100);
+            builder.Property(e => e.Description).HasMaxLength(1000);
+            builder.Property(e => e.Organizer).IsRequired();
+            builder.Property(e => e.StartedAt).IsRequired();
+            builder.Property(e => e.EndDate).IsRequired();
+            builder.Property(e => e.Location).IsRequired().HasMaxLength(100);
             builder.Property(e => e.Contact).IsRequired();
 
-            // Define relationship with EventAsset
             builder.HasOne(e => e.EventAsset)
                 .WithOne(a => a.Event)
                 .HasForeignKey<EventAsset>(a => a.EventId)
-                .OnDelete(DeleteBehavior.Cascade); // Optional: Delete EventAsset when Event is deleted
+                .OnDelete(DeleteBehavior.Cascade);
 
-            // One-to-Many relationship with EventRegistration
             builder.HasMany(e => e.Registrations)
                 .WithOne(er => er.Event)
                 .HasForeignKey(er => er.EventId)
@@ -321,7 +331,7 @@ public class SchoolConfiguration
             builder.Property(er => er.EventId).IsRequired();
 
             builder.HasOne(er => er.Event)
-                .WithMany(e => e.Registrations) // Event has many EventRegistrations
+                .WithMany(e => e.Registrations) 
                 .HasForeignKey(er => er.EventId);
 
             builder.Property(er => er.FirstName).IsRequired().HasMaxLength(50);
@@ -329,9 +339,34 @@ public class SchoolConfiguration
             builder.Property(er => er.Email).IsRequired().HasMaxLength(255);
             builder.Property(er => er.RegistrationDate).IsRequired();
 
-            // RegistrationCode property configuration
-            builder.Property(er => er.RegistrationCode).IsRequired().HasMaxLength(10);
+            builder.Property(er => er.RegistrationCode).IsRequired().HasMaxLength(6);
 
         }
     }
+
+    public class StudentScoreConfiguration : IEntityTypeConfiguration<StudentScore>
+    {
+        public void Configure(EntityTypeBuilder<StudentScore> builder)
+        {
+            builder.ToTable("StudentScores");
+            builder.HasKey(s => s.Id);
+
+            builder.Property(s => s.StudentId).IsRequired();
+            builder.HasOne(s => s.Student)
+              .WithMany(u => u.StudentScores)
+              .HasForeignKey(s => s.StudentId);
+
+            builder.Property(s => s.LessonId).IsRequired();
+            builder.HasOne(s => s.Lesson)
+              .WithMany(l => l.StudentScores)
+              .HasForeignKey(s => s.LessonId);
+
+            builder.Property(s => s.AssessmentType).IsRequired();
+            builder.Property(s => s.AssessmentDate).IsRequired();
+            builder.Property(s => s.Score).IsRequired();
+            builder.Property(s => s.Remark);
+        }
+    }
+
+
 }

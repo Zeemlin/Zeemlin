@@ -8,7 +8,7 @@ namespace Zeemlin.Domain.Entities;
 public class Lesson : Auditable
 {
     public string Title { get; set; }
-    public string Description { get; set; }
+    public string? Description { get; set; }
     public string StartDate { get; set; }
     public string EndDate { get; set; }
     public long GroupId { get; set; }
@@ -22,4 +22,5 @@ public class Lesson : Auditable
     public ICollection<Question> Questions { get; set; }
     public ICollection<VideoLessonAsset> VideoLessons { get; set; }
     public ICollection<LessonAttendance> LessonAttendances { get; set; }
+    public ICollection<StudentScore> StudentScores { get; set; }
 }

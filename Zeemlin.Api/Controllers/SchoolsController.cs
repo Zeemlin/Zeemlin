@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Zeemlin.Domain.Enums;
 using Zeemlin.Service.DTOs.Schools;
+using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces;
 
 namespace Zeemlin.Api.Controllers;
@@ -40,5 +41,25 @@ public class SchoolsController : BaseController
         var schools = await _schoolService.FilterByRegionAsync(region, schoolType);
         return Ok(schools);
     }
+
+    [HttpPut("{id}/activity")]
+    public async Task<IActionResult> UpdateSchoolActivityAsync(long id, [FromBody] SchoolActivityForUpdateDto activityDto)
+    {
+        if (!Enum.IsDefined(typeof(SchoolActivity), activityDto.SchoolActivity))
+        {
+            throw new ArgumentException("Invalid school activity value.");
+        }
+
+        try
+        {
+            var schoolDto = await _schoolService.UpdateSchoolActivityAsync(id, activityDto);
+            return Ok(schoolDto);
+        }
+        catch (ZeemlinException ex)
+        {
+            return StatusCode(ex.StatusCode, ex.Message);
+        }
+    }
+
 
 }

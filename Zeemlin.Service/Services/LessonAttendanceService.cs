@@ -29,8 +29,6 @@ namespace Zeemlin.Service.Services
             _lessonAttendanceRepository = lessonAttendanceRepository;
         }
 
-
-
         public async Task<LessonAttendanceForResultDto> CreateAsync(LessonAttendanceForCreationDto dto)
         {
             var lesson = await _lessonRepository
@@ -50,7 +48,7 @@ namespace Zeemlin.Service.Services
                 throw new ZeemlinException(404, "Student not found");
 
             var existingAttendance = await _lessonAttendanceRepository.SelectAll()
-                .Where(a => a.LessonId == dto.LessonId && a.StudentId == dto.StudentId && a.DateTime.Date == dto.Date.Date)
+                .Where(a => a.LessonId == dto.LessonId && a.StudentId == dto.StudentId && a.DateTime.Date == dto.DateTime.Date)
                 .FirstOrDefaultAsync();
 
             if (existingAttendance is not null)
@@ -158,11 +156,12 @@ namespace Zeemlin.Service.Services
             }).ToList();
         }
 
+
+
         public async Task<IEnumerable<StudentAttendanceReportDto>> GetLessonAttendanceReportAsync(
-            long groupId, long lessonId, DateTime startDate, DateTime endDate)
+            long lessonId, DateTime startDate, DateTime endDate)
         {
             var attendances = await _lessonAttendanceRepository.SelectAll()
-                .Where(la => la.Lesson.GroupId == groupId)
                 .Where(la => la.LessonId == lessonId)
                 .Where(la => la.DateTime >= startDate && la.DateTime <= endDate)
                 .Include(la => la.Student)

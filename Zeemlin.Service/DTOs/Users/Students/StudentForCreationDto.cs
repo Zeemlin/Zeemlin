@@ -25,8 +25,14 @@ public class StudentForCreationDto
     public string Password { get; set; }
 
     // Address
+    [Required]
+    public Region Region { get; set; }
+    [Required]
     public string DistrictName { get; set; }
+    [Required]
     public string GeneralAddressMFY { get; set; }
+    [Required]
     public string StreetName { get; set; }
+    [Required]
     public short HouseNumber { get; set; }
 }

@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Users;
 using Zeemlin.Domain.Entities.Users;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Extentions;
+using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Schools;
 using Zeemlin.Service.DTOs.Users.Admins;
@@ -56,17 +58,24 @@ public class AdminService : IAdminService
         if (IsValidPassportSeria is not null)
             throw new ZeemlinException(409, "PassportSeria already exists");
 
-        var IsValidSchoolNumber = await _schoolRepository.SelectAll()
+        var IsValidSchool = await _schoolRepository.SelectAll()
             .Where(s => s.Id == dto.SchoolId)
             .AsNoTracking()
             .FirstOrDefaultAsync();
 
-        if (IsValidSchoolNumber is null)
+        if (IsValidSchool is null)
             throw new ZeemlinException(404, "School Not Found");
 
+        if (IsValidSchool?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {IsValidSchool?.Name} is temporarily inactive. Admin cannot be created.");
+        }
 
+        var hasherResult = PasswordHelper.Hash(dto.Password);
         var mapped = _mapper.Map<Admin>(dto);
         mapped.CreatedAt = DateTime.UtcNow;
+        mapped.Salt = hasherResult.Salt;
+        mapped.Password = hasherResult.Hash;
         await _adminRepository.InsertAsync(mapped);
 
         return _mapper.Map<AdminForResultDto>(mapped);
@@ -109,20 +118,43 @@ public class AdminService : IAdminService
         if (IsValidPassportSeria is not null)
             throw new ZeemlinException(404, "PassportSeria already exists");
 
-        var IsValidSchoolNumber = await _adminRepository
-            .SelectAll()
+        var IsValidSchool = await _schoolRepository.SelectAll()
+            .Where(s => s.Id == dto.SchoolId)
             .AsNoTracking()
-            .Where(s => s.SchoolId == dto.SchoolId)
             .FirstOrDefaultAsync();
 
-        if (IsValidSchoolNumber is null)
+        if (IsValidSchool is null)
             throw new ZeemlinException(404, "School Not Found");
+
+        if (IsValidSchool?.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {IsValidSchool?.Name} is temporarily inactive. Admin information cannot be changed.");
+        }
 
         var mapped = _mapper.Map(dto, IsValidId);
         mapped.UpdatedAt = DateTime.UtcNow;
         await _adminRepository.UpdateAsync(mapped);
 
         return _mapper.Map<AdminForResultDto>(mapped);
+    }
+
+    public async Task<bool> ChangePasswordAsync(string email, AdminForChangePasswordDto dto)
+    {
+        var user = await _adminRepository.SelectAll()
+            .Where(u => u.Email == email)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        if (user is null || !PasswordHelper.Verify(dto.OldPassword, user.Salt, user.Password))
+            throw new ZeemlinException(404, "User or Password is incorrect");
+        else if (dto.NewPassword != dto.ConfirmPassword)
+            throw new ZeemlinException(400, "New password and confirm password aren't equal");
+
+        var hash = PasswordHelper.Hash(dto.ConfirmPassword);
+        user.Salt = hash.Salt;
+        user.Password = hash.Hash;
+        var updated = await _adminRepository.UpdateAsync(user);
+
+        return true;
     }
 
     public async Task<bool> RemoveAsync(long id)
@@ -147,9 +179,6 @@ public class AdminService : IAdminService
             a.Email.Contains(searchTerm));
         return await query.ToListAsync();
     }
-
-
-
 
     public async Task<IEnumerable<AdminForResultDto>> RetrieveAllAsync(PaginationParams @params)
     {

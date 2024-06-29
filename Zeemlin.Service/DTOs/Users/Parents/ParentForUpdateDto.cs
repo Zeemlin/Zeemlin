@@ -24,16 +24,4 @@ public class ParentForUpdateDto
     [EmailAddress]
     public string Email { get; set; }
 
-    // Address 
-    [Required]
-    [MaxLength(50)]
-    public string DistrictName { get; set; }
-    [Required]
-    [MaxLength(50)]
-    public string GeneralAddressMFY { get; set; }
-    [Required]
-    [MaxLength(50)]
-    public string StreetName { get; set; }
-    [Required]
-    public short HouseNumber { get; set; }
 }

@@ -6,11 +6,12 @@ namespace Zeemlin.Service.Interfaces.Users;
 
 public interface IDirectorService
 {
-    Task<bool> RemoveAsync(long id);
+    Task<bool> RemoveByIdAsync(long id);
     Task<DirectorForResultDto> RetrieveByIdAsync(long id);
     Task<DirectorForResultDto> CreateAsync(DirectorForCreationDto dto);
     Task<DirectorForResultDto> ModifyAsync(long id, DirectorForUpdateDto dto);
+    Task<bool> ChangePasswordAsync(string email, DirectorForChangePasswordDto dto);
     Task<IEnumerable<DirectorForResultDto>> RetrieveAllAsync(PaginationParams @params);
-    Task<IEnumerable<DirectorForResultDto>> RetrieveByUsernameAsync(string search, AppDbContext context);
+    Task<IEnumerable<DirectorForResultDto>> RetrieveByUsernameAsync(string search, PaginationParams @params);
 
 }

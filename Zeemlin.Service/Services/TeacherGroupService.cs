@@ -37,6 +37,18 @@ public class TeacherGroupService : ITeacherGroupService
         if (group is null)
             throw new ZeemlinException(404, "Group not found");
 
+        var school = await _groupRepository.SelectAll()
+            .Where(u => u.Id == dto.GroupId)
+            .Include(l => l.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school.SchoolActivity != SchoolActivity.Active)
+        {
+            throw new ZeemlinException(403, $"The {school?.Name} is temporarily inactive. Unable to add teacher to {group.Name}");
+        }
+
         var teacher = await _teacher.SelectAll()
             .Where(s => s.Id == dto.TeacherId)
             .AsNoTracking()
@@ -56,9 +68,9 @@ public class TeacherGroupService : ITeacherGroupService
 
         // Check for existing MainTeacher in the group
         var existingMainTeacher = await _repository.SelectAll()
-    .Where(tg => tg.GroupId == dto.GroupId && tg.Role == TeacherRole.MainTeacher)
-    .AsNoTracking()
-    .FirstOrDefaultAsync();
+            .Where(tg => tg.GroupId == dto.GroupId && tg.Role == TeacherRole.MainTeacher)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
 
         if (existingMainTeacher is not null && dto.Role == TeacherRole.MainTeacher)
         {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Zeemlin.Domain.Entities.Assets;
+using Zeemlin.Domain.Entities.Library;
 
 namespace Zeemlin.Data.DbContexts.EntityConfigurations
 {
@@ -28,6 +29,8 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.ToTable("SchoolAssets");
                 builder.HasKey(e => e.Id);
 
+                builder.Property(e => e.Title).IsRequired().HasMaxLength(100);
+                builder.Property(e => e.Description).HasMaxLength(1000);
                 builder.Property(e => e.Path).IsRequired();
                 builder.Property(e => e.UploadedDate).IsRequired();
 
@@ -121,6 +124,65 @@ namespace Zeemlin.Data.DbContexts.EntityConfigurations
                 builder.HasOne(e => e.Lesson)
                     .WithMany(l => l.VideoLessons) // Lesson has many VideoLessonAssets
                     .HasForeignKey(e => e.LessonId);
+            }
+        }
+
+        public class StudentAwardConfiguration : IEntityTypeConfiguration<StudentAward>
+        {
+            public void Configure(EntityTypeBuilder<StudentAward> builder)
+            {
+                builder.ToTable("StudentAwards");
+                builder.HasKey(e => e.Id);
+
+                builder.Property(e => e.Path).IsRequired();
+                builder.Property(e => e.UploadedDate).IsRequired();
+
+                builder.HasOne(e => e.Student)
+                    .WithMany(s => s.StudentAwards)
+                    .HasForeignKey(e => e.StudentId);
+            }
+        }
+
+        public class TeacherAwardConfiguration : IEntityTypeConfiguration<TeacherAward>
+        {
+            public void Configure(EntityTypeBuilder<TeacherAward> builder)
+            {
+                builder.ToTable("TeacherAwards");
+                builder.HasKey(e => e.Id);
+
+                builder.Property(e => e.Path).IsRequired();
+                builder.Property(e => e.UploadedDate).IsRequired();
+
+                builder.HasOne(e => e.Teacher)
+                    .WithMany(t => t.TeacherAwards)
+                    .HasForeignKey(e => e.TeacherId);
+            }
+        }
+
+        public class BookConfiguration : IEntityTypeConfiguration<Book>
+        {
+            public void Configure(EntityTypeBuilder<Book> builder)
+            {
+                builder.ToTable("Books"); 
+
+                builder.HasKey(b => b.Id); 
+
+                builder.Property(b => b.ISBN).IsRequired().HasMaxLength(13); 
+                builder.Property(b => b.Title).IsRequired().HasMaxLength(255);
+                builder.Property(b => b.Author).IsRequired().HasMaxLength(100);
+                builder.Property(b => b.Description).HasMaxLength(1000); 
+                builder.Property(b => b.Subject).IsRequired().HasMaxLength(50);
+                builder.Property(b => b.UploadDate).IsRequired();
+                builder.Property(b => b.Language).IsRequired().HasMaxLength(20);
+                builder.Property(b => b.ContentType);
+                builder.Property(b => b.Size);
+
+                builder.HasOne(b => b.School)
+                  .WithMany(s => s.Books) 
+                  .HasForeignKey(b => b.SchoolId);
+
+                builder.Property(b => b.BookPhotoUrl);
+                builder.Property(b => b.PdfUrl);
             }
         }
     }

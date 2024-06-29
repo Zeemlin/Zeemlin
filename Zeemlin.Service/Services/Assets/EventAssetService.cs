@@ -17,7 +17,7 @@ public class EventAssetService : IEventAssetService
     private readonly long _maxSizeInBytes;
     private readonly IEventRepository _eventRepository;
     private readonly IEventAssetRepository _eventAssetRepository;
-    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".HEIC" }; // Support image formats
+    private readonly string[] _allowedExtensions = { ".jpg", ".jpeg", ".png", ".heic" }; // Support image formats
 
     public EventAssetService(
         IMapper mapper,

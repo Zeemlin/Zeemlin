@@ -40,11 +40,8 @@ public class EventService : IEventService
         // Validate all data upfront
         await ValidateEventDates(createDto); // Ensure asynchronous validation completes
 
-
-
-        // Proceed with event creation if all validation passes
         var mappedEvent = _mapper.Map<Event>(createDto);
-        mappedEvent.CreatedAt = DateTime.UtcNow; // Use DateTime.Now for user's local time zone (optional)
+        mappedEvent.CreatedAt = DateTime.UtcNow;
         mappedEvent.Status = EventStatus.InProcess;
 
         await _eventRepository.InsertAsync(mappedEvent);
@@ -63,9 +60,9 @@ public class EventService : IEventService
             throw new ZeemlinException(400, "The event needs to end sometime after it starts. Just sayin'.");
         }
 
-        if (createDto.IsPaid && (!createDto.Price.HasValue || createDto.Price.Value < 1000))
+        if (createDto.IsPaid && (!createDto.Price.HasValue || createDto.Price.Value < 999))
         {
-            throw new ZeemlinException(400, "Hold on there! For paid events, price can't be empty or less than 1000.");
+            throw new ZeemlinException(400, "Hold on there! For paid events, price can't be empty or less than 999.");
         }
 
         // Assuming a username property exists in the DTO
@@ -99,6 +96,7 @@ public class EventService : IEventService
         return true;
     }
 
+    // Barcha uchun ruxsat etilgan eventlar methodi
     public async Task<IEnumerable<EventForPublicDto>> GetApprovedEventsForPublicAsync()
     {
         // Use Include to eagerly load the EventAsset
@@ -120,10 +118,6 @@ public class EventService : IEventService
 
         return result;
     }
-
-
-
-
 
     public async Task<EventForResultDto> GetEventByIdAsync(long eventId)
     {
@@ -151,7 +145,7 @@ public class EventService : IEventService
         return eventDto;
     }
 
-
+    // Ko'rib chiqilishi kerak bo'lgan eventlar uchun method
     public async Task<IEnumerable<EventForResultDto>> RetrieveAllInProccesAsync()
     {
         // Use Include to eagerly load the EventAsset
@@ -173,9 +167,7 @@ public class EventService : IEventService
         return result;
     }
 
-
-
-
+    // Eventning ma'lumotlarini o'zgartirish uchun method
     public async Task<EventForResultDto> UpdateEventAsync(long eventId, EventForUpdateDto updateDto)
     {
         var IsValidId = await _eventRepository
@@ -186,7 +178,6 @@ public class EventService : IEventService
         if (IsValidId is null)
             throw new ZeemlinException(404, "Not Found");
 
-
         var mapped = _mapper.Map(updateDto, IsValidId);
         mapped.UpdatedAt = DateTime.UtcNow;
         await _eventRepository.UpdateAsync(mapped);
@@ -194,6 +185,7 @@ public class EventService : IEventService
         return _mapper.Map<EventForResultDto>(mapped);
     }
 
+    // Eventning statusini o'zgartirish uchun method
     public async Task<EventForResultDto> UpdateEventStatusAsync(long eventId, EventStatusUpdateDto statusDto)
     {
         var IsValidId = await _eventRepository
@@ -225,11 +217,13 @@ public class EventService : IEventService
 
 
         // Send email notification
+        // Agar event statusi o'zgarsa, event o'tkazmoqchi bo'lgan adminning emailiga xabar yuboriladi
         await SendEmailNotification(createrEmail, creatorUsername, statusDto.NewStatus, mapped);
 
         return _mapper.Map<EventForResultDto>(mapped);
     }
 
+    // Ruxsat etilmagan eventlar
     public async Task<IEnumerable<RejectedEventForSuperAdminDto>> RetrieveAllRejectedAsync()
     {
         // Fetch rejected events with non-null UpdaterIds
@@ -256,8 +250,8 @@ public class EventService : IEventService
         return mappedEvents;
     }
 
-
-
+    // Ruxsat etilgan eventlar uchun method.
+    // Qaysi super admin ruxsat bergan bo'lsa, shu super adminning username ko'rinib turadi
     public async Task<IEnumerable<ApprovedEventForSuperAdminDto>> RetrieveAllApprovedAsync()
     {
         var approvedEvents = await _eventRepository.SelectAll()
@@ -283,16 +277,14 @@ public class EventService : IEventService
 
     }
 
-
-
+    // Admin yoki Super Adminning username bo'yicha e-mailini olish uchun method
     private async Task<string> GetCreatorEmailAsync(string username)
     {
-        // Assuming creatorId belongs to either admin or super admin
         var superAdminEmail = await _superAdminRepository.GetEmailByUsername(username);
 
         if (string.IsNullOrEmpty(superAdminEmail))
         {
-            var adminEmail = await _adminRepository.GetEmailByUsername(username); // Assuming username is stored as string
+            var adminEmail = await _adminRepository.GetEmailByUsername(username); 
             return adminEmail;
         }
 

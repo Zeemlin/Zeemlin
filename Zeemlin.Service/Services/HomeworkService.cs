@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Domain.Entities;
+using Zeemlin.Domain.Enums;
 using Zeemlin.Service.Commons.Extentions;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Assets.HomeworkAssets;
@@ -37,6 +38,16 @@ public class HomeworkService : IHomeworkService
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found.");
 
+        var school = await _lessonRepository.SelectAll()
+            .Where(l => l.Id == dto.LessonId)
+            .Include(l => l.Group.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Group.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Homework cannot be created.");
+
         if (dto.Deadline < DateTime.Now)
         {
             throw new ZeemlinException(400, "Invalid date entered. DueTime cannot be in the past.");
@@ -65,6 +76,16 @@ public class HomeworkService : IHomeworkService
 
         if (lesson is null)
             throw new ZeemlinException(404, "Lesson not found.");
+
+        var school = await _lessonRepository.SelectAll()
+            .Where(l => l.Id == dto.LessonId)
+            .Include(l => l.Group.Course.School)
+            .AsNoTracking()
+            .Select(l => l.Group.Course.School)
+            .FirstOrDefaultAsync();
+
+        if (school?.SchoolActivity != SchoolActivity.Active)
+            throw new ZeemlinException(403, $"{school?.Name} is temporarily inactive. Homework information cannot be changed.");
 
         if (dto.Deadline < DateTime.Now)
             throw new ZeemlinException(400, "Invalid date entered. DueTime cannot be in the past.");

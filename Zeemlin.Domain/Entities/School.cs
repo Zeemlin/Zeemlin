@@ -1,54 +1,41 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Zeemlin.Domain.Enums;
 using Zeemlin.Domain.Commons;
-using Zeemlin.Domain.Entities.Assets;
-using Zeemlin.Domain.Entities.Questions;
 using Zeemlin.Domain.Entities.Users;
-using Zeemlin.Domain.Enums;
+using Zeemlin.Domain.Entities.Assets;
+using Zeemlin.Domain.Entities.Library;
 
 namespace Zeemlin.Domain.Entities;
 
 public class School : Auditable
 {
-    [Required] // Adjust MaxLength as needed
-    public long SchoolNumber { get; set; }
-    [Required]
     public EducationType SchoolType { get; set; }
-
-    [Required]
-    [MaxLength(255)] // Adjust MaxLength as needed
     public string Name { get; set; }
-    [Required]
-    [MaxLength(2000)]
     public string Description { get; set; }
-
-    [Required]
     public long DirectorId { get; set; }
-    public Director Director { get; set; } // Navigation property for Director
-
+    public Director Director { get; set; } 
 
     // Address
-    [Required]
-    [MaxLength(50)]
-    public string Country { get; set; }
-    [Required]
     public Region Region { get; set; }
-    [Required]
-    [MaxLength(50)]
     public string DistrictName { get; set; }
-    [Required]
-    [MaxLength(50)]
     public string GeneralAddressMFY { get; set; }
-    [Required]
-    [MaxLength(50)]
     public string StreetName { get; set; }
 
     // Contact Information
-    public string CallCenter { get; set; }
-    public string EmailCenter { get; set; }
+    public string? CallCenter { get; set; }
+    public string? EmailCenter { get; set; }
     public string? Website { get; set; }
 
+    // School Logo
     public long? SchoolLogoAssetId { get; set; }
     public SchoolLogoAsset? SchoolLogoAsset { get; set; }
+
+    // School Activity
+    public SchoolActivity SchoolActivity { get; set; }
+    public DateTime EndDateOfActivity { get; set; }
+
+
+    public ICollection<Admin> Admins { get; set; }
     public ICollection<SchoolAsset> Asset { get; set; }
     public ICollection<Course> Courses { get; set; }
+    public ICollection<Book> Books { get; set; }
 }

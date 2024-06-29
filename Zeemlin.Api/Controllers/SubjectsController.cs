@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Subjects;
+using Zeemlin.Service.Exceptions;
 using Zeemlin.Service.Interfaces;
 
 namespace Zeemlin.Api.Controllers;
@@ -33,4 +34,27 @@ public class SubjectsController : BaseController
     [HttpPut("{id}")]
     public async Task<IActionResult> PutAsync([FromRoute(Name = "id")] long id, [FromBody] SubjectForUpdateDto dto)
         => Ok(await this._subjectService.ModifyAsync(id, dto));
+
+    [HttpGet("lessons/{lessonId}/subjects")]
+    public async Task<IActionResult> GetSubjectsByLessonAsync([FromRoute(Name = "lessonId")] long lessonId, [FromQuery] PaginationParams @params)
+    {
+        try
+        {
+            var subjects = await _subjectService.RetrieveSubjectsByLessonIdAsync(lessonId, @params);
+            if (subjects.Any())
+            {
+                return Ok(subjects);
+            }
+            return NotFound("Subjects not found for the specified lesson.");
+        }
+        catch (ZeemlinException ex)
+        {
+            return StatusCode(ex.StatusCode, ex.Message);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
 }

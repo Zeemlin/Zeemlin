@@ -57,7 +57,7 @@ namespace Zeemlin.Api.Controllers
         public async Task<IActionResult> GetLessonAttendanceReportAsync(
             long groupId, long lessonId, DateTime startDate, DateTime endDate)
         {
-            var report = await _lessonAttendanceService.GetLessonAttendanceReportAsync(groupId, lessonId, startDate, endDate);
+            var report = await _lessonAttendanceService.GetLessonAttendanceReportAsync(lessonId, startDate, endDate);
             return Ok(report);
         }
     }

@@ -84,12 +84,15 @@ public static class ServiceExtensions
         services.AddScoped<IGradeService, GradeService>();
         services.AddScoped<IGradeRepository, GradeRepository>();
 
-        // Relationships
-        services.AddScoped<IStudentGroupRepository, StudentGroupRepository>();
-        services.AddScoped<IStudentGroupService, StudentGroupService>();
+        services.AddScoped<IStudentScoreService, StudentScoreService>();
+        services.AddScoped<IStudentScoreRepository, StudentScoreRepository>();
 
-        services.AddScoped<ITeacherGroupRepository, TeacherGroupRepository>();
+        // Relationships
+        services.AddScoped<IStudentGroupService, StudentGroupService>();
+        services.AddScoped<IStudentGroupRepository, StudentGroupRepository>();
+
         services.AddScoped<ITeacherGroupService, TeacherGroupService>();
+        services.AddScoped<ITeacherGroupRepository, TeacherGroupRepository>();
 
         services.AddScoped<IParentStudentService, ParentStudentService>();
         services.AddScoped<IParentStudentRepository, ParentStudentRepository>();
@@ -113,6 +116,9 @@ public static class ServiceExtensions
 
         services.AddScoped<IVideoLessonAssetRepository,  VideoLessonAssetRepository>();
         services.AddScoped<IVideoLessonAssetService, VideoLessonAssetService>();
+
+        services.AddScoped<IStudentAwardRepository, StudentAwardRepository>();
+        services.AddScoped<IStudentAwardService, StudentAwardService>();
 
     }
 

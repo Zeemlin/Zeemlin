@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Zeemlin.Data.IRepositries.Users;
 using Zeemlin.Domain.Entities.Users;
 using Zeemlin.Service.Commons.Extentions;
+using Zeemlin.Service.Commons.Helpers;
 using Zeemlin.Service.Configurations;
 using Zeemlin.Service.DTOs.Users.SuperAdmins;
 using Zeemlin.Service.Exceptions;
@@ -34,7 +35,7 @@ public class SuperAdminService : ISuperAdminService
         var IsValidUserEmail = await _repository
             .SelectAll()
             .AsNoTracking()
-            .Where(u => u.Email.ToLower() == dto.Email.ToLower())
+            .Where(u => u.User.Email.ToLower() == dto.Email.ToLower())
             .FirstOrDefaultAsync();
 
         if (IsValidUserEmail is not null)
@@ -79,7 +80,7 @@ public class SuperAdminService : ISuperAdminService
         var IsValidUserEmail = await _repository
             .SelectAll()
             .AsNoTracking()
-            .Where(u => u.Email.ToLower() == dto.Email.ToLower())
+            .Where(u => u.User.Email.ToLower() == dto.Email.ToLower())
             .FirstOrDefaultAsync();
 
         if (IsValidUserEmail is not null)
@@ -99,6 +100,26 @@ public class SuperAdminService : ISuperAdminService
         await _repository.UpdateAsync(mapped);
 
         return _mapper.Map<SuperAdminForResultDto>(mapped);
+    }
+
+    public async Task<bool> ChangePasswordAsync(string email, SuperAdminForChangePasswordDto dto)
+    {
+        var user = await _repository.SelectAll()
+            .Where(u => u.User.Email == email)
+            .Include(s=> s.User)
+            .AsNoTracking()
+            .FirstOrDefaultAsync();
+        if (user is null || !PasswordHelper.Verify(dto.OldPassword, user.User.Salt, user.User.Password))
+            throw new ZeemlinException(404, "User or Password is incorrect");
+        else if (dto.NewPassword != dto.ConfirmPassword)
+            throw new ZeemlinException(400, "New password and confirm password aren't equal");
+
+        var hash = PasswordHelper.Hash(dto.ConfirmPassword);
+        user.User.Salt = hash.Salt;
+        user.User.Password = hash.Hash;
+        var updated = await _repository.UpdateAsync(user);
+
+        return true;
     }
 
     public async Task<bool> RemoveAsync(long id)

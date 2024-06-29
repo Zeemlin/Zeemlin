@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
 using Zeemlin.Data.IRepositries;
 using Zeemlin.Data.IRepositries.Users;
 using Zeemlin.Domain.Entities;
@@ -130,4 +129,37 @@ public class ParentStudentService : IParentStudentService
 
         return _mapper.Map<ParentStudentForResultDto>(isValidId);
     }
+
+    public async Task<ParentWithChildrenDto> GetChildrenByParentIdAsync(long parentId)
+    {
+        var parent = await _parentRepository.SelectAll()
+          .Where(p => p.Id == parentId)
+          .AsNoTracking()
+          .FirstOrDefaultAsync();
+
+        if (parent is null)
+        {
+            throw new ZeemlinException(404, "Parent not found.");
+        }
+
+        var children = await _studentRepository.SelectAll()
+          .Where(s => s.ParentStudents.Any(ps => ps.ParentId == parentId))
+          .AsNoTracking()
+          .Select(s => new ChildInfoDto
+          {
+              Id = s.Id,
+              Name = s.FirstName,
+              Surname = s.LastName,
+              StudentUniqueId = s.StudentUniqueId
+          })
+          .ToListAsync();
+
+        return new ParentWithChildrenDto
+        {
+            ParentId = parent.Id,
+            // Map existing parent information from "parent" object
+            Children = children
+        };
+    }
+
 }
